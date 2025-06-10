@@ -140,13 +140,14 @@ function Home() {
     }
 
     const email = user.emailAddresses[0].emailAddress;
+    console.log("email from handle getting started : ", email)
 
     try {
       // Check if we already have a baseID in context - if so, use it
       if (currentUser.baseID) {
         console.log("Using existing baseID from context:", currentUser.baseID);
-        navigate("/dashboard");
-        return;
+        // navigate("/dashboard");
+        // return;
       }
 
       // Changed endpoint from /user/details to /user/verify which exists in your API
