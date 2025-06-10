@@ -1,0 +1,70 @@
+.decrypting {
+  display: inline;
+}
+
+.features-container {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.feature-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(232, 95, 92, 0.08);
+  transition: transform 0.2s;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  color: #e85f5c;
+  margin-right: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(232, 95, 92, 0.1);
+}
+
+.feature-content h4 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.feature-content p {
+  color: #667085;
+  margin-bottom: 0;
+}
+
+/* OTP input styling */
+.otp-input {
+  letter-spacing: 0.5em;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.otp-input:focus {
+  border-color: #e85f5c;
+  box-shadow: 0 0 0 0.25rem rgba(232, 95, 92, 0.25);
+}
+
+.btn-link {
+  color: #e85f5c;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  color: #d54c49;
+  text-decoration: underline;
+}

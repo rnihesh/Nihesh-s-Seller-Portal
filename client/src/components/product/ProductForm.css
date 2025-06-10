@@ -1,0 +1,49 @@
+.product-form-container {
+  padding-bottom: 40px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: rgba(232, 95, 92, 0.5);
+  box-shadow: 0 0 0 0.25rem rgba(232, 95, 92, 0.25);
+}
+
+.preview-image {
+  max-height: 250px;
+  max-width: 100%;
+  object-fit: contain;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 10px auto;
+}
+
+.card {
+  border-radius: 12px;
+  border: 1px solid #f2f2f2;
+}
+
+.btn-primary {
+  background-color: #e85f5c;
+  border-color: #e85f5c;
+}
+
+.btn-primary:hover {
+  background-color: #d54c49;
+  border-color: #d54c49;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+/* Style for number inputs to remove spinner arrows in some browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
