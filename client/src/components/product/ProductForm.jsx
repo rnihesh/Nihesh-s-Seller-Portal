@@ -29,6 +29,7 @@ function ProductForm() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState(null); // null, 'redirecting', or 'error'
 
   // Categories for dropdown
   const categories = [
@@ -183,6 +184,8 @@ function ProductForm() {
 
         if (response.status === 200) {
           setSuccess("Product updated successfully!");
+          // Show loading state with feedback text
+          setSubmissionStatus("redirecting");
           setTimeout(() => navigate("/dashboard"), 1500);
         }
       } else {
@@ -205,6 +208,8 @@ function ProductForm() {
           });
           setImageFile(null);
           setImagePreview(null);
+          // Show loading state with feedback text
+          setSubmissionStatus("redirecting");
           setTimeout(() => navigate("/dashboard"), 1500);
         }
       }
@@ -214,6 +219,7 @@ function ProductForm() {
         err.response?.data?.message ||
           "Failed to save product. Please try again."
       );
+      setSubmissionStatus("error");
     } finally {
       setLoading(false);
     }
@@ -435,6 +441,25 @@ function ProductForm() {
           </div>
         </div>
       </div>
+
+      {submissionStatus === "redirecting" && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+          style={{
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            zIndex: 1050,
+          }}
+        >
+          <div className="text-center">
+            <div className="modern-spinner">
+              <div className="spinner-circle"></div>
+              <div className="spinner-circle-outer"></div>
+            </div>
+            <h5 className="mt-4" style={{ color: "#e85f5c" }}>{success}</h5>
+            <p className="text-muted">Redirecting to dashboard...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
