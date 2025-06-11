@@ -425,7 +425,7 @@ function Home() {
       {isSignedIn && (
         <div className="container mt-5 pt-5">
           <div className="row gx-5">
-            <div className="col-md-6">
+            <div className="col-md-6 align-items-center">
               <div className="p-4">
                 <h2 className="mb-4" style={{ color: "var(--text-primary)" }}>
                   Welcome, {user?.firstName}!

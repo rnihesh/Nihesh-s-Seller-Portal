@@ -30,6 +30,8 @@ function ProductForm() {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null); // null, 'redirecting', or 'error'
+  const [suggestedDescription, setSuggestedDescription] = useState("");
+  const [isSuggestingDescription, setIsSuggestingDescription] = useState(false);
 
   // Categories for dropdown
   const categories = [
@@ -71,6 +73,9 @@ function ProductForm() {
       ...formData,
       [name]: name === "pQuantity" || name === "pPrice" ? Number(value) : value,
     });
+    if (name === "pName" && value.trim() !== "") {
+      setSuggestedDescription(""); // Clear previous suggestion if product name changes
+    }
   };
 
   // Handle image file selection
@@ -157,6 +162,43 @@ function ProductForm() {
       }
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  const handleSuggestDescription = async () => {
+    if (!formData.pName.trim()) {
+      setError("Please enter a product name first to get suggestions.");
+      return;
+    }
+    setIsSuggestingDescription(true);
+    setSuggestedDescription("");
+    setError("");
+    try {
+      const response = await axios.post(
+        `${getBaseUrl()}/gemini/suggest-description`,
+        {
+          productName: formData.pName,
+        }
+      );
+      if (response.data && response.data.suggestion) {
+        setSuggestedDescription(response.data.suggestion);
+      } else {
+        setError("Could not retrieve a suggestion.");
+      }
+    } catch (err) {
+      console.error("Error fetching description suggestion:", err);
+      setError(
+        err.response?.data?.message || "Failed to get description suggestion."
+      );
+    } finally {
+      setIsSuggestingDescription(false);
+    }
+  };
+
+  const applySuggestedDescription = () => {
+    if (suggestedDescription) {
+      setFormData((prev) => ({ ...prev, pDescription: suggestedDescription }));
+      setSuggestedDescription(""); // Clear suggestion after applying
     }
   };
 
@@ -247,7 +289,7 @@ function ProductForm() {
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
           <div className="card shadow-sm">
-            <div className="card-body p-4">
+            <div className="card-body p-4" style={{borderRadius: "15px"}}>
               <h2 className="text-center mb-4">
                 {isEditing ? "Edit Product" : "Add New Product"}
               </h2>
@@ -290,6 +332,65 @@ function ProductForm() {
                     rows="4"
                     required
                   ></textarea>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      className="btn ai-suggest-btn btn-sm me-2"
+                      onClick={handleSuggestDescription}
+                      disabled={
+                        isSuggestingDescription || !formData.pName.trim()
+                      }
+                    >
+                      {isSuggestingDescription ? (
+                        <>
+                          <span
+                            className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                            style={{ width: "1rem", height: "1rem" }}
+                          ></span>
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-stars me-1"></i>✨ Generate with
+                          AI
+                        </>
+                      )}
+                    </button>
+                    {suggestedDescription && (
+                      <button
+                        type="button"
+                        className="btn apply-suggestion-btn btn-sm"
+                        onClick={applySuggestedDescription}
+                      >
+                        <i className="bi bi-check2 me-1"></i>
+                        Apply
+                      </button>
+                    )}
+                  </div>
+                  {suggestedDescription && (
+                    <div className="ai-suggestion-card mt-3">
+                      <div className="suggestion-header">
+                        <div className="ai-badge">
+                          <i className="bi bi-robot me-1"></i>
+                          AI Generated
+                        </div>
+                        <button
+                          type="button"
+                          className="suggestion-close"
+                          onClick={() => setSuggestedDescription("")}
+                        >
+                          <i className="bi bi-x"></i>
+                        </button>
+                      </div>
+                      <div className="suggestion-content">
+                        <p className="suggestion-text">
+                          {suggestedDescription}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -427,7 +528,7 @@ function ProductForm() {
                           className="spinner-border spinner-border-sm me-2"
                           role="status"
                           aria-hidden="true"
-                           style={{ width: "1rem", height: "1rem" }}
+                          style={{ width: "1rem", height: "1rem" }}
                         ></span>
                         <span>Saving...</span>
                       </>
@@ -448,7 +549,7 @@ function ProductForm() {
         <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            backgroundColor: "rgba(120, 120, 120, 0.5)",
             zIndex: 1050,
           }}
         >

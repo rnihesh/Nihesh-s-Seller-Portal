@@ -7,6 +7,7 @@ dotenv.config();
 const mongoose = require("mongoose");
 
 const userApp = require("./APIs/userApi");
+const geminiApp = require("./APIs/geminiApi")
 
 const cors = require("cors");
 app.use(cors());
@@ -33,6 +34,7 @@ app.use(exp.json());
 app.use(exp.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use("/user", userApp);
+app.use("/gemini", geminiApp)
 
 // Add this right after your cors middleware
 app.use((req, res, next) => {

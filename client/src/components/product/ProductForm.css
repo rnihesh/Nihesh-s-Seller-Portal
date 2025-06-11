@@ -172,7 +172,6 @@ input[type="file"].form-control {
 input[type="file"].form-control:hover {
   border-color: var(--accent-color);
   background-color: var(--input-background); /* Keep same background on hover */
-  
 }
 
 /* Style the file input button part */
@@ -189,4 +188,257 @@ input[type="file"].form-control::file-selector-button {
 input[type="file"].form-control:hover::file-selector-button {
   background-color: var(--accent-color);
   color: var(--accent-color);
+}
+
+/* AI Suggestion buttons styling for theme support */
+.btn-outline-info {
+  color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus,
+.btn-outline-info:active {
+  color: var(--button-text) !important;
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.btn-outline-info:disabled {
+  color: var(--text-secondary) !important;
+  border-color: var(--input-border) !important;
+  background-color: transparent !important;
+  opacity: 0.6;
+}
+
+.btn-outline-success {
+  color: #28a745 !important;
+  border-color: #28a745 !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+  color: #ffffff !important;
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+}
+
+/* Dark mode specific adjustments for success button */
+html[data-theme="dark"] .btn-outline-success {
+  color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+html[data-theme="dark"] .btn-outline-success:hover,
+html[data-theme="dark"] .btn-outline-success:focus,
+html[data-theme="dark"] .btn-outline-success:active {
+  color: #000000 !important;
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+/* Spinner inside buttons should inherit text color */
+.btn .spinner-border {
+  border-color: currentColor;
+  border-right-color: transparent;
+}
+
+/* AI Suggest Button - Premium Feature Style */
+.ai-suggest-btn {
+  background: linear-gradient(135deg, #ea6d66 0%, #a24b4b 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 6px 15px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.ai-suggest-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(223, 28, 28, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.ai-suggest-btn:hover::before {
+  left: 100%;
+}
+
+.ai-suggest-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+  background: linear-gradient(135deg, #d85a5a 0%, #904141 100%) !important;
+}
+
+.ai-suggest-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+}
+
+.ai-suggest-btn:disabled {
+  background: var(--input-border) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed !important;
+}
+
+.ai-suggest-btn:disabled::before {
+  display: none;
+}
+
+/* Apply Suggestion Button */
+.apply-suggestion-btn {
+  background: linear-gradient(135deg, #a3deac 0%, #b4d7ab 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3) !important;
+}
+
+.apply-suggestion-btn:hover {
+  background: linear-gradient(135deg, #9fc8a1 0%, #7bb87d 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4) !important;
+}
+
+/* Modern AI Suggestion Card */
+.ai-suggestion-card {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.ai-suggestion-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.suggestion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--input-border);
+}
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.suggestion-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.suggestion-close:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.suggestion-content {
+  padding: 16px;
+}
+
+.suggestion-text {
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Dark mode specific adjustments */
+html[data-theme="dark"] .ai-suggestion-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .ai-suggest-btn {
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2) !important;
+}
+
+html[data-theme="dark"] .ai-suggest-btn:hover {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+html[data-theme="dark"] .apply-suggestion-btn {
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+}
+
+html[data-theme="dark"] .apply-suggestion-btn:hover {
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .ai-suggest-btn,
+  .apply-suggestion-btn {
+    font-size: 0.85rem !important;
+    padding: 6px 12px !important;
+  }
+
+  .suggestion-header {
+    padding: 10px 12px;
+  }
+
+  .suggestion-content {
+    padding: 12px;
+  }
 }
