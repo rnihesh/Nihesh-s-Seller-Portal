@@ -1,7 +1,9 @@
-const exp = require("express")
-const app = exp()
+const exp = require("express");
+const app = exp();
 
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config();
+
 const mongoose = require("mongoose");
 
 const userApp = require("./APIs/userApi");
@@ -28,5 +30,12 @@ mongoose
   .catch((err) => console.log("Error in DB Connection : ", err));
 
 app.use(exp.json());
+app.use(exp.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use("/user", userApp);
+
+// Add this right after your cors middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
+  next();
+});

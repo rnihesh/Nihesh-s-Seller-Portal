@@ -9,6 +9,9 @@ const productSchema = new mongoose.Schema(
     pImageUrl: {
       type: String,
     },
+    pImagePublicId: {
+      type: String,
+    },
     pDescription: {
       type: String,
       required: true,

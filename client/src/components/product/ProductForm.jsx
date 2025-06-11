@@ -20,11 +20,15 @@ function ProductForm() {
     pQuantity: 1,
     pPrice: "",
     pImageUrl: "",
+    pImagePublicId: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Categories for dropdown
   const categories = [
@@ -50,7 +54,12 @@ function ProductForm() {
         pQuantity: editProduct.pQuantity || 0,
         pPrice: editProduct.pPrice || "",
         pImageUrl: editProduct.pImageUrl || "",
+        pImagePublicId: editProduct.pImagePublicId || "",
       });
+
+      if (editProduct.pImageUrl) {
+        setImagePreview(editProduct.pImageUrl);
+      }
     }
   }, [isEditing, editProduct]);
 
@@ -61,6 +70,93 @@ function ProductForm() {
       ...formData,
       [name]: name === "pQuantity" || name === "pPrice" ? Number(value) : value,
     });
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+
+    // Create a preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle image upload
+  const handleImageUpload = async () => {
+    if (!imageFile) {
+      return setError("Please select an image file first");
+    }
+
+    setUploadingImage(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("productImage", imageFile);
+
+      console.log(
+        "Uploading image:",
+        imageFile.name,
+        "Size:",
+        Math.round(imageFile.size / 1024),
+        "KB"
+      );
+
+      const response = await axios.post(
+        `${getBaseUrl()}/user/upload-product-image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          // Add timeout and retry config
+          timeout: 30000, // 30 seconds
+        }
+      );
+
+      console.log("Upload response:", response.data);
+
+      if (response.data.success) {
+        setFormData((prev) => ({
+          ...prev,
+          pImageUrl: response.data.imageUrl,
+          pImagePublicId: response.data.publicId,
+        }));
+
+        setSuccess("Image uploaded successfully!");
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        throw new Error(response.data.message || "Upload failed");
+      }
+    } catch (err) {
+      console.error("Error uploading image:", err);
+
+      // Detailed error handling
+      if (err.response) {
+        // Server responded with error
+        const errorMsg =
+          err.response.data.message ||
+          err.response.data.error ||
+          "Upload failed";
+        setError(`Server error: ${errorMsg}`);
+      } else if (err.request) {
+        // Request made but no response
+        setError(
+          "No response received from server. Check your network connection."
+        );
+      } else {
+        // Request setup error
+        setError(`Upload error: ${err.message}`);
+      }
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   // Handle form submission
@@ -105,7 +201,10 @@ function ProductForm() {
             pQuantity: 1,
             pPrice: "",
             pImageUrl: "",
+            pImagePublicId: "",
           });
+          setImageFile(null);
+          setImagePreview(null);
           setTimeout(() => navigate("/dashboard"), 1500);
         }
       }
@@ -247,35 +346,56 @@ function ProductForm() {
                 </div>
 
                 <div className="mb-4">
-                  <label htmlFor="pImageUrl" className="form-label">
-                    Image URL
+                  <label htmlFor="productImage" className="form-label">
+                    Product Image
                   </label>
-                  <input
-                    type="url"
-                    className="form-control"
-                    id="pImageUrl"
-                    name="pImageUrl"
-                    value={formData.pImageUrl}
-                    onChange={handleChange}
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <div className="input-group mb-3">
+                    <input
+                      type="file"
+                      className="form-control"
+                      id="productImage"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      onClick={handleImageUpload}
+                      disabled={!imageFile || uploadingImage}
+                    >
+                      {uploadingImage ? (
+                        <>
+                          <span
+                            className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          Uploading...
+                        </>
+                      ) : (
+                        "Upload"
+                      )}
+                    </button>
+                  </div>
                   <small className="text-muted">
-                    Enter a valid URL for the product image
+                    Select an image file (max 5MB) and click Upload
                   </small>
+                  {error && <div className="alert alert-danger">{error}</div>}
+                  {formData.pImageUrl && (
+                    <div className="form-text text-success">
+                      <i className="bi bi-check-circle-fill me-1"></i>
+                      {success}
+                    </div>
+                  )}
                 </div>
 
-                {formData.pImageUrl && (
+                {imagePreview && (
                   <div className="mb-4 text-center">
                     <p>Image Preview:</p>
                     <img
-                      src={formData.pImageUrl}
+                      src={imagePreview}
                       alt="Product preview"
                       className="img-thumbnail preview-image"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src =
-                          "https://placehold.co/300x200?text=Invalid+Image+URL";
-                      }}
                     />
                   </div>
                 )}

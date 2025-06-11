@@ -16,6 +16,9 @@ const {
   canResendOTP,
 } = require("../utils/sendMail.js");
 
+// Make sure this is at the top of the file
+const { upload, cloudinary } = require("../utils/cloudinary");
+
 //creating user
 userApp.post("/user", expressAsyncHandler(createUser));
 
@@ -331,7 +334,25 @@ userApp.delete(
     try {
       const { userId, pName } = req.body;
 
-      // Find the user and update to pull the product with matching pName
+      // Find the product first to get its image public ID
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+
+      const product = user.product.find((p) => p.pName === pName);
+      if (!product) {
+        return res
+          .status(404)
+          .send({ message: `Product with name "${pName}" not found` });
+      }
+
+      // Delete the image from Cloudinary if it exists
+      if (product.pImagePublicId) {
+        await cloudinary.uploader.destroy(product.pImagePublicId);
+      }
+
+      // Now delete the product from the database
       const result = await User.findByIdAndUpdate(
         userId,
         { $pull: { product: { pName: pName } } },
@@ -444,6 +465,66 @@ userApp.patch(
       });
     }
   })
+);
+
+
+// Update your route with comprehensive error handling
+userApp.post(
+  "/upload-product-image",
+  (req, res, next) => {
+    // Wrap multer in a try-catch
+    try {
+      // Use single file upload but handle errors
+      upload.single("productImage")(req, res, (err) => {
+        if (err) {
+          console.error("Multer error:", err);
+          return res.status(400).json({
+            success: false,
+            message: err.message || "Error processing image file",
+          });
+        }
+        next();
+      });
+    } catch (err) {
+      console.error("Upload middleware error:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Server error during file upload",
+        error: err.message,
+      });
+    }
+  },
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        console.log("No file received in request");
+        return res.status(400).json({
+          success: false,
+          message: "No image file uploaded",
+        });
+      }
+
+      console.log("File successfully processed by Cloudinary:", {
+        originalname: req.file.originalname,
+        size: req.file.size,
+        path: req.file.path,
+        filename: req.file.filename,
+      });
+
+      return res.status(200).json({
+        success: true,
+        imageUrl: req.file.path,
+        publicId: req.file.filename,
+      });
+    } catch (err) {
+      console.error("Error in upload route handler:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Server error processing upload",
+        error: err.message,
+      });
+    }
+  }
 );
 
 module.exports = userApp;
