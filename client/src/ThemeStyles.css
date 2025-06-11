@@ -1,0 +1,293 @@
+/* Base theme variables - light mode defaults */
+:root {
+  /* Light theme variables */
+  --background-primary: #ffffff;
+  --background-secondary: #f8f9fa;
+  --text-primary: #222222;
+  --text-secondary: #667085;
+  --card-background: #ffffff;
+  --card-border: #f2f2f2;
+  --input-background: #ffffff;
+  --input-border: #dee2e6;
+  --accent-color: #e85f5c;
+  --accent-hover: #d54c49;
+  --accent-light: rgba(232, 95, 92, 0.1);
+  --shadow-color: rgba(232, 95, 92, 0.07);
+  --divider-color: #f2f2f2;
+  --hover-background: #f8eaea;
+  --button-text: #ffffff;
+
+  /* Define RGB versions for rgba() usage */
+  --accent-color-rgb: 232, 95, 92;
+}
+
+/* Dark theme overrides */
+html[data-theme='dark'] {
+  --background-primary: #121212;
+  --background-secondary: #1e1e1e;
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --card-background: #242424;
+  --card-border: #333333;
+  --input-background: #2d2d2d;
+  --input-border: #444444;
+  --accent-color: #ff7875;
+  --accent-hover: #ff5c59;
+  --accent-light: rgba(255, 120, 117, 0.2);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --divider-color: #333333;
+  --hover-background: rgba(255, 120, 117, 0.15);
+  --button-text: #ffffff;
+
+  /* Define RGB versions for rgba() usage */
+  --accent-color-rgb: 255, 120, 117;
+}
+
+/* Forced colors (for accessibility) */
+@media (forced-colors: active) {
+  :root {
+    --accent-color: CanvasText;
+    --accent-hover: LinkText;
+    --accent-light: Canvas;
+  }
+}
+
+/* Core element styling */
+body {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  color: var(--accent-color);
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* Card styles */
+.card {
+  background-color: var(--card-background);
+  border-color: var(--card-border);
+  color: var(--text-primary);
+}
+
+.card-header,
+.card-footer {
+  background-color: var(--background-secondary);
+  border-color: var(--card-border);
+}
+
+/* Form control styles */
+.form-control,
+.form-select,
+.form-check-input,
+.input-group-text {
+  background-color: var(--input-background);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  background-color: var(--input-background);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 0.25rem var(--accent-light);
+  color: var(--text-primary);
+}
+
+.form-control::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Table styles */
+.table {
+  color: var(--text-primary);
+  border-color: var(--divider-color);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: var(--background-secondary);
+}
+
+/* Alert styles */
+.alert-primary {
+  background-color: var(--accent-light);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+/* Modal styles */
+.modal-content {
+  background-color: var(--card-background);
+  color: var(--text-primary);
+  border-color: var(--card-border);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--divider-color);
+}
+
+.modal-backdrop.show {
+  opacity: 0.7;
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--button-text);
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+  background-color: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.btn-link {
+  color: var(--accent-color);
+}
+
+/* Dropdown styles */
+.dropdown-menu {
+  background-color: var(--card-background);
+  border-color: var(--divider-color);
+}
+
+.dropdown-item {
+  color: var(--text-primary);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--hover-background);
+  color: var(--accent-color);
+}
+
+.dropdown-divider {
+  border-color: var(--divider-color);
+}
+
+/* Nav tabs */
+.nav-tabs .nav-link {
+  color: var(--text-secondary);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--accent-color);
+  background-color: var(--background-primary);
+  border-color: var(--divider-color) var(--divider-color)
+    var(--background-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--divider-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Utility classes for additional styling */
+.bg-primary {
+  background-color: var(--accent-color) !important;
+}
+
+.text-primary {
+  color: var(--accent-color) !important;
+}
+
+.border-primary {
+  border-color: var(--accent-color) !important;
+}
+
+/* Add a transition effect to all elements for smoother theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Light Theme */
+.light,
+body.light {
+  --accent-color: #e85f5c;
+  --accent-hover: #d54c49;
+  --accent-light: rgba(232, 95, 92, 0.1);
+  --accent-color-rgb: 232, 95, 92;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --text-muted: #888888;
+
+  --background-primary: #ffffff;
+  --background-secondary: #f8f9fa;
+
+  --card-background: rgba(255, 255, 255, 0.95);
+  --card-border: #e5e5e5;
+
+  --input-background: #ffffff;
+  --input-border: #ddd;
+
+  --hover-background: #f8eaea;
+  --divider-color: #e5e5e5;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme */
+.dark,
+body.dark {
+  --accent-color: #ff6b6b;
+  --accent-hover: #ff5252;
+  --accent-light: rgba(255, 107, 107, 0.15);
+  --accent-color-rgb: 255, 107, 107;
+
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888888;
+
+  --background-primary: #121212;
+  --background-secondary: #1e1e1e;
+
+  --card-background: rgba(30, 30, 30, 0.95);
+  --card-border: #333333;
+
+  --input-background: #2a2a2a;
+  --input-border: #444444;
+
+  --hover-background: rgba(255, 107, 107, 0.1);
+  --divider-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure transitions work smoothly */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

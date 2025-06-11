@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "./ThemeStyles.css";
 
-import "./index.css";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -15,6 +15,7 @@ import Signup from "./components/auth/SignUp";
 import Dashboard from "./components/common/Dashboard";
 import ProductForm from "./components/product/ProductForm";
 import UserContext from "./components/contexts/UserContext";
+import ThemeProvider from "./components/contexts/ThemeContext";
 
 const browserRouterObj = createBrowserRouter(
   [
@@ -54,13 +55,15 @@ const browserRouterObj = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <UserContext>
-      <RouterProvider
-        router={browserRouterObj}
-        future={{
-          v7_startTransition: true,
-        }}
-      />
-    </UserContext>
+    <ThemeProvider>
+      <UserContext>
+        <RouterProvider
+          router={browserRouterObj}
+          future={{
+            v7_startTransition: true,
+          }}
+        />
+      </UserContext>
+    </ThemeProvider>
   </StrictMode>
 );

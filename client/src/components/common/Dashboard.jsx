@@ -227,37 +227,61 @@ function Dashboard() {
       </div>
 
       {/* Search and Filter Section - Improved UI */}
-      <div className="search-filter-container p-3 mb-4 rounded shadow-sm">
-        <div className="row g-3">
+      <div className="search-filter-container p-4 mb-4 rounded shadow-sm">
+        <div className="row g-4">
           <div className="col-md-5">
-            <label htmlFor="searchInput" className="form-label mb-1 fw-bold">
-              <FaSearch className="me-2" style={{ color: "#e85f5c" }} />
+            <label htmlFor="searchInput" className="form-label mb-2 fw-bold">
+              <FaSearch
+                className="me-2"
+                style={{ color: "var(--accent-color)" }}
+              />
               Search Products
             </label>
             <div className="input-group">
               <input
                 id="searchInput"
                 type="text"
-                className="form-control form-control-lg border"
+                className="form-control form-control-lg search-input"
                 placeholder="Search by name or description..."
                 value={searchTerm}
                 onChange={handleSearchChange}
+                style={{
+                  borderRadius: searchTerm ? "0.5rem 0 0 0.5rem" : "0.5rem",
+                  transition: "all 0.3s ease",
+                  border: "1px solid var(--input-border)",
+                  backgroundColor: "var(--input-background)",
+                  color: "var(--text-primary)",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                }}
               />
               {searchTerm && (
                 <button
-                  className="btn btn-outline-secondary border-start-0"
+                  className="btn"
                   type="button"
                   onClick={() => setSearchTerm("")}
+                  style={{
+                    borderRadius: "0 0.5rem 0.5rem 0",
+                    borderLeft: "none",
+                    backgroundColor: "var(--input-background)",
+                    borderColor: "var(--input-border)",
+                    color: "var(--text-secondary)",
+                    transition: "all 0.2s ease",
+                    padding: "0.75rem 1.25rem",
+                  }}
+                  aria-label="Clear search"
                 >
-                  ✕
+                  <span aria-hidden="true">✕</span>
                 </button>
               )}
             </div>
           </div>
 
           <div className="col-md-5">
-            <label htmlFor="categorySelect" className="form-label mb-1 fw-bold">
-              <FaFilter className="me-2" style={{ color: "#e85f5c" }} />
+            <label htmlFor="categorySelect" className="form-label mb-2 fw-bold">
+              <FaFilter
+                className="me-2"
+                style={{ color: "var(--accent-color)" }}
+              />
               Filter by Category
             </label>
             <select
@@ -265,6 +289,14 @@ function Dashboard() {
               className="form-select form-select-lg"
               value={selectedCategory}
               onChange={handleCategoryChange}
+              style={{
+                borderRadius: "0.5rem",
+                border: "1px solid var(--input-border)",
+                backgroundColor: "var(--input-background)",
+                color: "var(--text-primary)",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                transition: "all 0.3s ease",
+              }}
             >
               <option value="">All Categories</option>
               {categories.map((category, index) => (
@@ -276,24 +308,35 @@ function Dashboard() {
           </div>
 
           <div className="col-md-2 d-flex align-items-end">
-            {!searchTerm && !selectedCategory && (
+            {!searchTerm && !selectedCategory ? (
               <button
-                className="btn btn-light btn-lg w-100 border"
+                className="btn w-100"
+                disabled
                 style={{
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                  backgroundColor: "var(--background-secondary)",
+                  color: "var(--text-secondary)",
+                  border: "1px solid var(--divider-color)",
+                  borderRadius: "0.5rem",
+                  padding: "0.75rem 1rem",
+                  boxShadow: "none",
+                  transition: "all 0.3s ease",
+                  opacity: 0.7,
                 }}
               >
-                No Filters Added
+                No Filters Applied
               </button>
-            )}
-            {(searchTerm || selectedCategory) && (
+            ) : (
               <button
-                className="btn btn-light btn-lg w-100 border"
+                className="btn w-100"
                 onClick={clearFilters}
                 style={{
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                  backgroundColor: "var(--accent-color)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  padding: "0.75rem 1rem",
+                  boxShadow: "0 4px 10px rgba(232, 95, 92, 0.2)",
+                  transition: "all 0.3s ease",
                 }}
               >
                 Clear Filters
@@ -305,11 +348,25 @@ function Dashboard() {
         {/* Filter Status */}
         {filteredProducts.length > 0 &&
           products.length !== filteredProducts.length && (
-            <div className="filter-status mt-3 pt-2 border-top">
-              <p className="text-muted mb-0">
-                <span className="fw-bold">{filteredProducts.length}</span> of{" "}
-                <span className="fw-bold">{products.length}</span> products
-                match your filters
+            <div className="filter-status mt-3 pt-3 border-top">
+              <p
+                className="mb-0 d-flex align-items-center"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                <FaSearch
+                  size={14}
+                  className="me-2"
+                  style={{ color: "var(--accent-color)" }}
+                />
+                <span
+                  className="fw-bold"
+                  style={{ color: "var(--accent-color)" }}
+                >
+                  {filteredProducts.length}
+                </span>
+                <span className="mx-1">of</span>
+                <span className="fw-bold">{products.length}</span>
+                <span className="ms-1">products match your filters</span>
               </p>
             </div>
           )}

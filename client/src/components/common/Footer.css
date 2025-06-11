@@ -1,13 +1,13 @@
 /* Footer Styles */
 .bg-footer {
-  background: #fff;
+  background: var(--card-background);
   padding: 40px 0 20px 0;
-  border-top: 1px solid #f2f2f2;
-  box-shadow: 0 -2px 12px rgba(232, 95, 92, 0.04);
+  border-top: 1px solid var(--divider-color);
+  box-shadow: 0 -2px 12px var(--shadow-color);
 }
 
 .footer-heading h3 {
-  color: #e85f5c;
+  color: var(--accent-color);
   font-size: 2.2rem;
   font-weight: bold;
   margin-bottom: 5px;
@@ -16,7 +16,7 @@
 }
 
 .footer-heading p {
-  color: #667085;
+  color: var(--text-secondary);
   font-size: 1rem;
   text-align: center;
   margin-bottom: 20px;
@@ -36,24 +36,24 @@
   justify-content: center;
   width: 46px;
   height: 46px;
-  background-color: #f8eaea;
+  background-color: var(--hover-background);
   border-radius: 50%;
   transition: 0.2s;
-  color: #e85f5c;
+  color: var(--accent-color);
   font-size: 22px;
-  border: 1px solid #f2f2f2;
+  border: 1px solid var(--divider-color);
 }
 
 .social-icons a:hover {
-  background-color: #e85f5c;
+  background-color: var(--accent-color);
   color: #fff;
   transform: scale(1.13);
-  border-color: #e85f5c;
+  border-color: var(--accent-color);
 }
 
 .contact-info {
   text-align: center;
-  color: #667085;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   margin-top: 15px;
 }
@@ -61,7 +61,7 @@
   margin-bottom: -1px;
 }
 .contact-info a {
-  color: #667085;
+  color: var(--text-secondary);
 }
 .animated-text {
   color: #e85f5c;
@@ -74,7 +74,61 @@
   margin-top: 10px;
   text-align: center;
   font-size: 1rem;
-  color: #667085;
+  color: var(--text-secondary);
+}
+
+.footer {
+  background-color: var(--card-background);
+  color: var(--text-primary);
+  border-top: 1px solid var(--divider-color);
+  padding: 20px 0;
+  margin-top: auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.footer-text a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-text a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* If you have "Made with ❤️ by Nihesh" text */
+.footer-credit {
+  color: var(--text-secondary);
+}
+
+.footer-credit .heart {
+  color: var(--accent-color);
+}
+
+.footer-credit .author {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Add this new class for the made with text */
+.footer-made-with {
+  color: var(--text-primary) !important;
+  font-family: monospace;
+  margin-bottom: 8px;
+}
+
+.footer-made-with .heart {
+  color: #e85f5c;
+}
+
+.footer-made-with .author {
+  font-weight: bold;
 }
 
 /* Responsive Design */
@@ -82,4 +136,20 @@
   .contact-info {
     word-wrap: break-word;
   }
+}
+
+.animated-text {
+  background-image: linear-gradient(
+    90deg,
+    #e85f5c,
+    #fcff4b,
+    #97b4d0,
+    #8789c0,
+    #e85f5c
+  );
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: colorShift 3s infinite linear;
 }

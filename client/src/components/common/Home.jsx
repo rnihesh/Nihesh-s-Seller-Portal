@@ -140,7 +140,7 @@ function Home() {
     }
 
     const email = user.emailAddresses[0].emailAddress;
-    console.log("email from handle getting started : ", email)
+    console.log("email from handle getting started : ", email);
 
     try {
       // Check if we already have a baseID in context - if so, use it
@@ -359,9 +359,9 @@ function Home() {
           <Squares
             direction="diagonal"
             speed={0.5}
-            borderColor="#e0e0e0"
+            borderColor="var(--divider-color)"
             squareSize={60}
-            hoverFillColor="#e85f5c"
+            hoverFillColor="var(--accent-color)"
             className="position-absolute top-0 start-0 w-100 h-100"
             style={{ zIndex: 0, opacity: 0.15 }}
           />
@@ -374,18 +374,21 @@ function Home() {
               style={{
                 fontFamily: "Cal Sans",
                 fontSize: "3rem",
-                color: "#222",
+                color: "var(--text-primary)",
               }}
             >
-              <span style={{ color: "#e85f5c" }}>Nihesh's Seller Portal</span> –
-              Manage Your Products with Ease
+              <span style={{ color: "var(--accent-color)" }}>
+                Nihesh's Seller Portal
+              </span>{" "}
+              – Manage Your Products with Ease
             </h1>
             <div className="mb-3" style={{ maxWidth: 600 }}>
               <DecryptedText
                 text="Your inventory management solution"
                 speed={60}
                 maxIterations={18}
-                className="fs-4 text-dark"
+                className="fs-4"
+                style={{ color: "var(--text-primary)" }}
                 parentClassName="all-letters"
                 encryptedClassName="encrypted"
               />
@@ -395,7 +398,8 @@ function Home() {
                 text="Track inventory, manage products, and grow your business all in one place."
                 speed={60}
                 maxIterations={18}
-                className="fs-5 text-secondary"
+                className="fs-5"
+                style={{ color: "var(--text-secondary)" }}
                 parentClassName="all-letters"
                 encryptedClassName="encrypted"
               />
@@ -405,7 +409,7 @@ function Home() {
                 href="/signin"
                 className="btn btn-lg btn-primary px-5 py-2"
                 style={{
-                  background: "#e85f5c",
+                  background: "var(--accent-color)",
                   border: "none",
                   fontWeight: "bold",
                 }}
@@ -423,8 +427,10 @@ function Home() {
           <div className="row gx-5">
             <div className="col-md-6">
               <div className="p-4">
-                <h2 className="mb-4">Welcome, {user?.firstName}!</h2>
-                <p className="lead">
+                <h2 className="mb-4" style={{ color: "var(--text-primary)" }}>
+                  Welcome, {user?.firstName}!
+                </h2>
+                <p className="lead" style={{ color: "var(--text-secondary)" }}>
                   Manage your inventory, track products, and boost your sales
                   with our intuitive seller portal.
                 </p>
@@ -433,7 +439,7 @@ function Home() {
                     onClick={handleGetStarted}
                     className="btn btn-lg btn-primary px-5 py-2"
                     style={{
-                      background: "#e85f5c",
+                      background: "var(--accent-color)",
                       border: "none",
                       fontWeight: "bold",
                     }}
@@ -489,7 +495,13 @@ function Home() {
         className={`modal fade ${showPhoneModal ? "show d-block" : ""}`}
         tabIndex="-1"
         role="dialog"
-        style={showPhoneModal ? { background: "rgba(248,249,250,0.9)" } : {}}
+        style={
+          showPhoneModal
+            ? {
+                background: "rgba(0, 0, 0, 0.5)",
+              }
+            : {}
+        }
       >
         <div
           className="modal-dialog pt-5 py-5"
@@ -545,7 +557,7 @@ function Home() {
               <button
                 type="submit"
                 className="btn btn-primary"
-                style={{ background: "#e85f5c", border: "none" }}
+                style={{ background: "var(--accent-color)", border: "none" }}
               >
                 Register
               </button>
@@ -567,7 +579,13 @@ function Home() {
         className={`modal fade ${showOtpModal ? "show d-block" : ""}`}
         tabIndex="-1"
         role="dialog"
-        style={showOtpModal ? { background: "rgba(248,249,250,0.9)" } : {}}
+        style={
+          showOtpModal
+            ? {
+                background: "rgba(0, 0, 0, 0.5)",
+              }
+            : {}
+        }
       >
         <div
           className="modal-dialog pt-5 py-5"
@@ -613,7 +631,7 @@ function Home() {
               <button
                 type="submit"
                 className="btn btn-primary"
-                style={{ background: "#e85f5c", border: "none" }}
+                style={{ background: "var(--accent-color)", border: "none" }}
               >
                 Verify Email
               </button>

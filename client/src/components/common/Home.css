@@ -3,7 +3,7 @@
 }
 
 .features-container {
-  background-color: #f8f9fa;
+  background-color: var(--background-secondary);
   border-radius: 12px;
   padding: 20px;
 }
@@ -12,10 +12,11 @@
   display: flex;
   align-items: center;
   padding: 20px;
-  background-color: #fff;
+  background-color: var(--card-background);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(232, 95, 92, 0.08);
+  box-shadow: 0 2px 8px var(--shadow-color);
   transition: transform 0.2s;
+  border: 1px solid var(--card-border);
 }
 
 .feature-card:hover {
@@ -24,7 +25,7 @@
 
 .feature-icon {
   font-size: 2rem;
-  color: #e85f5c;
+  color: var(--accent-color);
   margin-right: 20px;
   width: 50px;
   height: 50px;
@@ -38,10 +39,11 @@
 .feature-content h4 {
   font-size: 1.2rem;
   margin-bottom: 5px;
+  color: var(--text-primary);
 }
 
 .feature-content p {
-  color: #667085;
+  color: var(--text-secondary);
   margin-bottom: 0;
 }
 
@@ -51,20 +53,56 @@
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
+  background-color: var(--input-background);
+  border-color: var(--input-border);
 }
 
 .otp-input:focus {
-  border-color: #e85f5c;
+  border-color: var(--accent-color);
   box-shadow: 0 0 0 0.25rem rgba(232, 95, 92, 0.25);
+  background-color: var(--input-background);
 }
 
 .btn-link {
-  color: #e85f5c;
+  color: var(--accent-color);
   text-decoration: none;
 }
 
 .btn-link:hover {
-  color: #d54c49;
+  color: var(--accent-hover);
   text-decoration: underline;
+}
+
+/* Modal styling for dark mode */
+.modal-content {
+  background-color: var(--card-background);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--divider-color);
+}
+
+.form-control {
+  background-color: var(--input-background);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.form-control:focus {
+  background-color: var(--input-background);
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 0.25rem rgba(232, 95, 92, 0.25);
+}
+
+.form-label {
+  color: var(--text-primary);
+}
+
+.text-muted {
+  color: var(--text-secondary) !important;
 }

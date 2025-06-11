@@ -1,2 +1,71 @@
-@import url('https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cal+Sans&family=Coral+Pixels&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cal+Sans&family=Coral+Pixels&display=swap");
+
+/* Light theme variables */
+:root {
+  --background-primary: #ffffff;
+  --background-secondary: #f8f9fa;
+  --text-primary: #333333;
+  --text-secondary: #667085;
+  --accent-color: #e85f5c;
+  --accent-hover: #d54c49;
+  --card-background: #ffffff;
+  --card-border: #e9ecef;
+  --input-background: #ffffff;
+  --input-border: #dee2e6;
+  --divider-color: #e9ecef;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --hover-background: #f8f9fa;
+}
+
+/* Dark theme variables */
+.dark {
+  --background-primary: #1a1a1a;
+  --background-secondary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --accent-color: #e85f5c;
+  --accent-hover: #ff6b6b;
+  --card-background: #2d2d2d;
+  --card-border: #404040;
+  --input-background: #3a3a3a;
+  --input-border: #555555;
+  --divider-color: #404040;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --hover-background: #3a3a3a;
+}
+
+/* Apply theme to body and html */
+body {
+  background-color: var(--background-primary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html {
+  background-color: var(--background-primary);
+  transition: background-color 0.3s ease;
+}
+
+/* Bootstrap overrides for dark mode */
+.dark .btn-primary {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.dark .btn-primary:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.dark .alert-warning {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-color: rgba(255, 193, 7, 0.5);
+  color: #fff3cd;
+}
+
+.dark .alert-success {
+  background-color: rgba(25, 135, 84, 0.2);
+  border-color: rgba(25, 135, 84, 0.5);
+  color: #d1f2eb;
+}

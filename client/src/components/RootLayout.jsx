@@ -2,8 +2,9 @@ import React from "react";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 import { Outlet } from "react-router-dom";
+import ThemeDebugger from "./utils/ThemeDebugger";
 
-import { PrimeReactProvider, PrimeReactContext } from "primereact/api";
+import { PrimeReactProvider } from "primereact/api";
 import { ClerkProvider } from "@clerk/clerk-react";
 
 // Import your Publishable Key
@@ -19,10 +20,13 @@ function RootLayout({ pageProps }) {
       <PrimeReactProvider>
         <div>
           <Header {...pageProps} />
-          <div style={{ minHeight: "90vh", height: "100%" , marginTop: "100px"}}>
+          <div
+            style={{ minHeight: "90vh", height: "100%", marginTop: "100px" }}
+          >
             <Outlet {...pageProps} />
           </div>
           <Footer {...pageProps} />
+          <ThemeDebugger /> {/* Keep this temporarily for debugging */}
         </div>
       </PrimeReactProvider>
     </ClerkProvider>

@@ -14,22 +14,23 @@ function Footer() {
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               style={{ textDecoration: "none" }}
             >
-              <img src={iconCycle} width="90px" alt="nihesh_seller_portal_logo" />
+              <img
+                src={iconCycle}
+                width="90px"
+                alt="nihesh_seller_portal_logo"
+              />
             </a>
-            <span style={{ color: "#e85f5c", marginLeft: 10 }}>Nihesh's Seller Portal</span>
+            <span style={{ color: "#e85f5c", marginLeft: 10 }}>
+              Nihesh's Seller Portal
+            </span>
           </h3>
           <p style={{ color: "#667085" }}>
             Sharing insights from all around the world
           </p>
         </div>
-        <div
-          className="text-center font-monospace mb-2"
-          style={{ color: "#222" }}
-        >
-          Made with <span style={{ color: "#e85f5c" }}>❤️</span> {" "} by Nihesh
-          <span className="fw-bold animated-text" style={{ color: "#e85f5c" }}>
-            
-          </span>
+        <div className="footer-made-with text-center">
+          Made with <span className="heart">❤️</span> by{" "}
+          <span className="author fw-bold animated-text">Nihesh</span>
         </div>
         <div className="social-icons flex-wrap">
           <a
@@ -57,7 +58,8 @@ function Footer() {
         </div>
         <div className="footer-bottom">
           <small>
-            &copy; {new Date().getFullYear()} Nihesh's Seller Portal. All rights reserved.
+            &copy; {new Date().getFullYear()} Nihesh's Seller Portal. All rights
+            reserved.
           </small>
         </div>
       </div>
