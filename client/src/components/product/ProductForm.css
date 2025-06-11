@@ -3,6 +3,16 @@
   background-color: var(--background-primary);
 }
 
+.form-select {
+  background-color: var(--input-background);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
+}
+
+.form-select:hover {
+  border-color: var(--accent-color);
+}
+
 .form-control:focus,
 .form-select:focus {
   border-color: rgba(var(--accent-color-rgb, 232, 95, 92), 0.5);
@@ -144,4 +154,39 @@ input[type="number"] {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.input-group-text {
+  background-color: var(--background-primary);
+  color: var(--accent-color);
+  border: var(--background-secondary);
+}
+
+/* File input styling for dark mode compatibility */
+input[type="file"].form-control {
+  background-color: var(--input-background);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
+}
+
+input[type="file"].form-control:hover {
+  border-color: var(--accent-color);
+  background-color: var(--input-background); /* Keep same background on hover */
+  
+}
+
+/* Style the file input button part */
+input[type="file"].form-control::file-selector-button {
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+  border: none;
+  border-right: 1px solid var(--input-border);
+  padding: 0.375rem 0.75rem;
+  margin-right: 0.75rem;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+input[type="file"].form-control:hover::file-selector-button {
+  background-color: var(--accent-color);
+  color: var(--accent-color);
 }

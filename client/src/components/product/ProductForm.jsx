@@ -372,11 +372,12 @@ function ProductForm() {
                       {uploadingImage ? (
                         <>
                           <span
-                            className="spinner-border spinner-border-sm me-2"
+                            className="spinner-border spinner-border-sm me-1"
                             role="status"
                             aria-hidden="true"
+                            style={{ width: "1rem", height: "1rem" }}
                           ></span>
-                          Uploading...
+                          <span className="text-center">Uploading...</span>
                         </>
                       ) : (
                         "Upload"
@@ -426,8 +427,9 @@ function ProductForm() {
                           className="spinner-border spinner-border-sm me-2"
                           role="status"
                           aria-hidden="true"
+                           style={{ width: "1rem", height: "1rem" }}
                         ></span>
-                        Saving...
+                        <span>Saving...</span>
                       </>
                     ) : isEditing ? (
                       "Update Product"
@@ -455,7 +457,9 @@ function ProductForm() {
               <div className="spinner-circle"></div>
               <div className="spinner-circle-outer"></div>
             </div>
-            <h5 className="mt-4" style={{ color: "#e85f5c" }}>{success}</h5>
+            <h5 className="mt-4" style={{ color: "#e85f5c" }}>
+              {success}
+            </h5>
             <p className="text-muted">Redirecting to dashboard...</p>
           </div>
         </div>
