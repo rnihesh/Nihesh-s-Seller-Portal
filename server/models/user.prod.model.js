@@ -59,6 +59,13 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verifyCodeExpiry: {
+      type: Date,
+    },
+    resendCode: {
+      type: Date,
+      default: null, // Initially null, meaning no restriction
+    },
     profileImageUrl: {
       type: String,
     },

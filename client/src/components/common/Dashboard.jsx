@@ -3,14 +3,25 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { userContextObj } from "../contexts/UserContext";
 import { getBaseUrl } from "../../utils/config";
-import { FaPlus, FaEdit, FaTrash, FaMinus } from "react-icons/fa";
+import {
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaMinus,
+  FaSearch,
+  FaFilter,
+} from "react-icons/fa";
 import "./Dashboard.css";
 
 function Dashboard() {
   const { currentUser } = useContext(userContextObj);
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const navigate = useNavigate();
 
   // Log currentUser and localStorage user on Dashboard load
@@ -33,13 +44,24 @@ function Dashboard() {
       }
 
       try {
-        console.log("try in fetching by currentUser.baseID: ", currentUser.baseID)
+        console.log(
+          "try in fetching by currentUser.baseID: ",
+          currentUser.baseID
+        );
         const response = await axios.get(
           `${getBaseUrl()}/user/products/?userId=${currentUser.baseID}`
         );
-        console.log("after axios products/userid : ", response)
+        console.log("after axios products/userid : ", response);
         if (response.data && response.data.payload) {
-          setProducts(response.data.payload || []);
+          const productsList = response.data.payload || [];
+          setProducts(productsList);
+          setFilteredProducts(productsList);
+
+          // Extract unique categories
+          const uniqueCategories = [
+            ...new Set(productsList.map((product) => product.pCat)),
+          ];
+          setCategories(uniqueCategories);
         }
         setLoading(false);
       } catch (err) {
@@ -51,6 +73,33 @@ function Dashboard() {
 
     fetchProducts();
   }, [currentUser?.baseID]); // Only depend on baseID
+
+  // Filter products when search term or category changes
+  useEffect(() => {
+    if (products.length > 0) {
+      let results = [...products];
+
+      // Apply search filter
+      if (searchTerm) {
+        results = results.filter(
+          (product) =>
+            product.pName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.pDescription
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+        );
+      }
+
+      // Apply category filter
+      if (selectedCategory) {
+        results = results.filter(
+          (product) => product.pCat === selectedCategory
+        );
+      }
+
+      setFilteredProducts(results);
+    }
+  }, [searchTerm, selectedCategory, products]);
 
   const handleUpdateQuantity = async (productName, increase) => {
     try {
@@ -65,8 +114,14 @@ function Dashboard() {
 
       if (response.data && response.data.payload) {
         // Update the product in the local state
-        setProducts(
-          products.map((p) =>
+        const updatedProducts = products.map((p) =>
+          p.pName === productName ? response.data.payload.product : p
+        );
+        setProducts(updatedProducts);
+
+        // Also update filtered products
+        setFilteredProducts((prevFiltered) =>
+          prevFiltered.map((p) =>
             p.pName === productName ? response.data.payload.product : p
           )
         );
@@ -92,7 +147,22 @@ function Dashboard() {
       });
 
       // Remove the product from local state
-      setProducts(products.filter((p) => p.pName !== productName));
+      const updatedProducts = products.filter((p) => p.pName !== productName);
+      setProducts(updatedProducts);
+      setFilteredProducts(
+        filteredProducts.filter((p) => p.pName !== productName)
+      );
+
+      // Update categories if needed
+      const remainingCategories = [
+        ...new Set(updatedProducts.map((product) => product.pCat)),
+      ];
+      setCategories(remainingCategories);
+
+      // Reset category filter if the selected category no longer exists
+      if (selectedCategory && !remainingCategories.includes(selectedCategory)) {
+        setSelectedCategory("");
+      }
     } catch (err) {
       console.error("Error deleting product:", err);
       setError("Failed to delete product. Please try again.");
@@ -101,6 +171,19 @@ function Dashboard() {
 
   const handleEditProduct = (product) => {
     navigate("/pro", { state: { product, isEditing: true } });
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("");
   };
 
   // Update the check for user authentication
@@ -136,6 +219,95 @@ function Dashboard() {
         </button>
       </div>
 
+      {/* Search and Filter Section - Improved UI */}
+      <div className="search-filter-container p-3 mb-4 rounded shadow-sm">
+        <div className="row g-3">
+          <div className="col-md-5">
+            <label htmlFor="searchInput" className="form-label mb-1 fw-bold">
+              <FaSearch className="me-2" style={{ color: "#e85f5c" }} />
+              Search Products
+            </label>
+            <div className="input-group">
+              <input
+                id="searchInput"
+                type="text"
+                className="form-control form-control-lg border"
+                placeholder="Search by name or description..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              {searchTerm && (
+                <button
+                  className="btn btn-outline-secondary border-start-0"
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="col-md-5">
+            <label htmlFor="categorySelect" className="form-label mb-1 fw-bold">
+              <FaFilter className="me-2" style={{ color: "#e85f5c" }} />
+              Filter by Category
+            </label>
+            <select
+              id="categorySelect"
+              className="form-select form-select-lg"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+            >
+              <option value="">All Categories</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-md-2 d-flex align-items-end">
+            {(!searchTerm && !selectedCategory) && (
+              <button
+                className="btn btn-light btn-lg w-100 border"
+                style={{
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                }}
+              >
+                No Filters Added
+              </button>
+            )}
+            {(searchTerm || selectedCategory) && (
+              <button
+                className="btn btn-light btn-lg w-100 border"
+                onClick={clearFilters}
+                style={{
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Filter Status */}
+        {filteredProducts.length > 0 &&
+          products.length !== filteredProducts.length && (
+            <div className="filter-status mt-3 pt-2 border-top">
+              <p className="text-muted mb-0">
+                <span className="fw-bold">{filteredProducts.length}</span> of{" "}
+                <span className="fw-bold">{products.length}</span> products
+                match your filters
+              </p>
+            </div>
+          )}
+      </div>
+
       {error && <div className="alert alert-danger">{error}</div>}
 
       {loading ? (
@@ -156,9 +328,20 @@ function Dashboard() {
             <FaPlus className="me-2" /> Add Product
           </button>
         </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="text-center p-5">
+          <h3>No matching products</h3>
+          <p>Try adjusting your search criteria or category filter</p>
+          <button
+            className="btn btn-outline-secondary mt-3"
+            onClick={clearFilters}
+          >
+            Clear Filters
+          </button>
+        </div>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div className="col" key={product._id}>
               <div className="card h-100 product-card">
                 {product.pImageUrl ? (
