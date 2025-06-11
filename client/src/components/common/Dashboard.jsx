@@ -22,6 +22,8 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const navigate = useNavigate();
 
   // Log currentUser and localStorage user on Dashboard load
@@ -133,10 +135,6 @@ function Dashboard() {
   };
 
   const handleDeleteProduct = async (productName) => {
-    if (!window.confirm(`Are you sure you want to delete ${productName}?`)) {
-      return;
-    }
-
     try {
       await axios.delete(`${getBaseUrl()}/user/delete`, {
         data: {
@@ -163,10 +161,19 @@ function Dashboard() {
       if (selectedCategory && !remainingCategories.includes(selectedCategory)) {
         setSelectedCategory("");
       }
+
+      // Close the modal
+      setShowDeleteModal(false);
     } catch (err) {
       console.error("Error deleting product:", err);
       setError("Failed to delete product. Please try again.");
+      setShowDeleteModal(false);
     }
+  };
+
+  const initiateDelete = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
   };
 
   const handleEditProduct = (product) => {
@@ -269,7 +276,7 @@ function Dashboard() {
           </div>
 
           <div className="col-md-2 d-flex align-items-end">
-            {(!searchTerm && !selectedCategory) && (
+            {!searchTerm && !selectedCategory && (
               <button
                 className="btn btn-light btn-lg w-100 border"
                 style={{
@@ -400,7 +407,7 @@ function Dashboard() {
                     </button>
                     <button
                       className="btn btn-outline-danger"
-                      onClick={() => handleDeleteProduct(product.pName)}
+                      onClick={() => initiateDelete(product)}
                     >
                       <FaTrash className="me-1" /> Delete
                     </button>
@@ -411,6 +418,50 @@ function Dashboard() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <div
+        className={`modal fade ${showDeleteModal ? "show d-block" : ""}`}
+        tabIndex="-1"
+        role="dialog"
+        style={showDeleteModal ? { background: "rgba(0,0,0,0.5)" } : {}}
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Confirm Deletion</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setShowDeleteModal(false)}
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <p>Are you sure you want to delete "{productToDelete?.pName}"?</p>
+              <p className="text-danger">This action cannot be undone.</p>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() =>
+                  productToDelete && handleDeleteProduct(productToDelete.pName)
+                }
+              >
+                Delete Product
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
