@@ -1,0 +1,169 @@
+.analytics-container {
+  padding-bottom: 30px;
+}
+
+.analytics-header {
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.analytics-header h2 {
+  margin-bottom: 0;
+}
+
+.charts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.analytics-section {
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
+
+.analytics-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+  background-color: var(--card-background);
+  border: 1px solid var(--card-border);
+}
+
+.analytics-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+.analytics-card-header {
+  background-color: var(--background-secondary);
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.analytics-card-header h4 {
+  margin: 0;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+}
+
+.analytics-card-body {
+  padding: 20px;
+  height: 350px;
+  background-color: var(--card-background);
+}
+
+.empty-analytics {
+  background-color: var(--background-secondary);
+  border-radius: 12px;
+  padding: 50px;
+  border: 2px dashed var(--divider-color);
+}
+
+.export-btn {
+  background-color: var(--accent-color) !important;
+  border: none !important;
+  padding: 8px 15px;
+}
+
+.export-btn:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+.time-range-selector {
+  min-width: 150px;
+}
+
+.analytics-insights {
+  background-color: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.analytics-insights h4 {
+  color: var(--accent-color);
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--divider-color);
+  padding-bottom: 10px;
+}
+
+.insights-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.insight-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.insight-item:last-child {
+  border-bottom: none;
+}
+
+.insight-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.insight-value {
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+/* PrimeReact Component Theming */
+:root {
+  --p-component-overlay-color: var(--shadow-color);
+}
+
+.p-dropdown {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 6px var(--shadow-color) !important;
+  background-color: var(--input-background) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-primary) !important;
+  transition: all 0.2s ease;
+}
+
+.p-dropdown:hover {
+  border-color: var(--accent-color) !important;
+}
+
+.p-dropdown-panel {
+  background-color: var(--card-background) !important;
+  border-color: var(--card-border) !important;
+  box-shadow: 0 3px 12px var(--shadow-color) !important;
+}
+
+.p-dropdown-item {
+  color: var(--text-primary) !important;
+}
+
+.p-dropdown-item:hover {
+  background-color: var(--hover-background) !important;
+  color: var(--accent-color) !important;
+}
+
+.p-button {
+  border-radius: 8px !important;
+}
+
+/* Media queries for better responsiveness */
+@media (max-width: 768px) {
+  .analytics-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .analytics-card-body {
+    height: 300px;
+  }
+}

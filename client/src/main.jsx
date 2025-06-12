@@ -16,6 +16,7 @@ import Dashboard from "./components/common/Dashboard";
 import ProductForm from "./components/product/ProductForm";
 import UserContext from "./components/contexts/UserContext";
 import ThemeProvider from "./components/contexts/ThemeContext";
+import Analytics from "./components/analyt/Analytics.jsx";
 
 const browserRouterObj = createBrowserRouter(
   [
@@ -42,6 +43,10 @@ const browserRouterObj = createBrowserRouter(
         {
           path: "pro",
           element: <ProductForm />,
+        },
+        {
+          path: "analytics",
+          element: <Analytics />,
         },
       ],
     },

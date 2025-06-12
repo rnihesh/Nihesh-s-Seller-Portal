@@ -71,7 +71,7 @@ function Home() {
               profileImageUrl: user.imageUrl,
               ...(data.payload.phNum && { phNum: data.payload.phNum }),
               ...(data.payload.companyName && {
-                companyName: data.payload.companyName,
+                company: data.payload.companyName,
               }),
             };
 
@@ -90,6 +90,7 @@ function Home() {
             lastName: user.lastName || prev.lastName,
             email: user.emailAddresses[0]?.emailAddress || prev.email,
             profileImageUrl: user.imageUrl || prev.profileImageUrl,
+          
           }));
         }
       } else if (isLoaded && !isSignedIn) {
@@ -122,6 +123,7 @@ function Home() {
       setCurrentUser((prev) => ({
         ...prev,
         baseID: parsedStored.baseID,
+        company: parsedStored.company
       }));
     }
     console.log("==============================");
@@ -167,7 +169,7 @@ function Home() {
           // Preserve any additional fields that might exist
           ...(data.payload.phNum && { phNum: data.payload.phNum }),
           ...(data.payload.companyName && {
-            companyName: data.payload.companyName,
+            company: data.payload.companyName,
           }),
         };
 
@@ -230,7 +232,7 @@ function Home() {
           baseID: payload._id, // Critical: Set the baseID
           isVerified: !!payload.isVerified,
           phNum: userData.phNum,
-          companyName: userData.companyName,
+          company: userData.companyName,
         };
 
         console.log("Setting new user data with baseID:", completeUserData);
@@ -307,6 +309,7 @@ function Home() {
         setCurrentUser((prev) => ({
           ...prev, // Keep all existing data including baseID
           isVerified: true,
+          company: response.data.payload.companyName
         }));
 
         setShowOtpModal(false);

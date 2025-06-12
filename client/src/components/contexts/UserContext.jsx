@@ -9,6 +9,7 @@ function UserContext({ children }) {
     profileImageUrl: "",
     baseID: "",
     isVerified: false,
+    company: "",
   });
 
   // Add a ref to track initial load
@@ -41,6 +42,7 @@ function UserContext({ children }) {
         profileImageUrl: "",
         baseID: "",
         isVerified: false,
+        company:""
       });
       localStorage.removeItem("currentuser");
       return;

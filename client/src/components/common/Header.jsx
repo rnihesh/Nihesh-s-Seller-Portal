@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle.js";
 import "./Header.css";
 import { userContextObj } from "../contexts/UserContext";
-import { FaBars, FaMoon, FaSun } from "react-icons/fa";
+import { FaBars, FaMoon, FaSun, FaChartPie } from "react-icons/fa";
 import { ThemeContext } from "../contexts/ThemeContext";
 
 function Header() {
@@ -14,6 +14,7 @@ function Header() {
   const { currentUser, setCurrentUser } = useContext(userContextObj);
   const { theme, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location/URL
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Apply theme to document body
@@ -28,6 +29,10 @@ function Header() {
     setCurrentUser({});
     navigate("/");
   };
+
+  // Check if current path is analytics or dashboard
+  const isAnalyticsPage = location.pathname === "/analytics";
+  const isDashboardPage = location.pathname === "/dashboard";
 
   // Mobile menu renderer
   const renderMobileMenu = () => {
@@ -82,6 +87,16 @@ function Header() {
                     onClick={() => setMenuOpen(false)}
                   >
                     <span>Dashboard</span>
+                  </Link>
+                </li>
+                {/* Show Analytics in mobile menu when signed in */}
+                <li className="nav-item">
+                  <Link
+                    to="/analytics"
+                    className="nav-link d-flex align-items-center p-3"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <span>Analytics</span>
                   </Link>
                 </li>
                 <li className="nav-item">
@@ -245,6 +260,21 @@ function Header() {
                     About
                   </a>
                 </li>
+                {/* Conditionally show Analytics or Dashboard based on current page */}
+                {isSignedIn && location.pathname !== "/" && (
+                  <li className="nav-item">
+                    {isAnalyticsPage ? (
+                      <Link to="/dashboard" className="nav-link d-flex align-items-center">
+                        Dashboard
+                      </Link>
+                    ) : (
+                      <Link to="/analytics" className="nav-link d-flex align-items-center">
+                        <FaChartPie className="me-1" style={{ fontSize: "0.9rem" }} />
+                        Analytics
+                      </Link>
+                    )}
+                  </li>
+                )}
                 <div className="dropdown ms-3 flex-shrink-0">
                   <img
                     src={user.imageUrl}

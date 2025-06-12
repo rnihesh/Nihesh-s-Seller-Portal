@@ -12,6 +12,10 @@ function ProductForm() {
   const isEditing = location.state?.isEditing || false;
   const editProduct = location.state?.product || null;
 
+  useEffect(() => {
+    // Scroll to the top of the page when component mounts
+    window.scrollTo(0, 0);
+  }, []);
   // Form state
   const [formData, setFormData] = useState({
     pName: "",
@@ -44,7 +48,25 @@ function ProductForm() {
     "Sports & Outdoors",
     "Automotive",
     "Health & Wellness",
-    "Other",
+    "Food & Beverages",
+    "Jewelry & Accessories",
+    "Office Supplies",
+    "Pet Supplies",
+    "Art & Craft Supplies",
+    "Musical Instruments",
+    "Baby & Kids",
+    "Industrial & Scientific",
+    "Tools & Home Improvement",
+    "Travel & Luggage",
+    "Garden & Outdoor",
+    "Furniture",
+    "Appliances",
+    "Computer & Tech Accessories",
+    "Mobile Accessories",
+    "Grocery & Gourmet",
+    "Stationery",
+    "Collectibles",
+    "Other"
   ];
 
   // Set form data if editing
@@ -266,6 +288,41 @@ function ProductForm() {
       setLoading(false);
     }
   };
+
+  // Add clipboard paste handler
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const file = items[i].getAsFile();
+          setImageFile(file);
+          
+          // Create a preview
+          const reader = new FileReader();
+          reader.onload = () => {
+            setImagePreview(reader.result);
+          };
+          reader.readAsDataURL(file);
+          
+          // Show success message
+          setSuccess("Image from clipboard ready. Click Upload to save it.");
+          setTimeout(() => setSuccess(""), 3000);
+          break;
+        }
+      }
+    };
+
+    // Add event listener to the window
+    window.addEventListener('paste', handlePaste);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('paste', handlePaste);
+    };
+  }, []);
 
   if (!currentUser?.baseID) {
     return (
