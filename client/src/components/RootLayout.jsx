@@ -26,7 +26,7 @@ function RootLayout({ pageProps }) {
             <Outlet {...pageProps} />
           </div>
           <Footer {...pageProps} />
-          <ThemeDebugger /> {/* Keep this temporarily for debugging */}
+          {/* <ThemeDebugger /> Keep this temporarily for debugging */}
         </div>
       </PrimeReactProvider>
     </ClerkProvider>

@@ -167,3 +167,12 @@
     height: 300px;
   }
 }
+
+/* Force chart text colors to match theme */
+.pie-chart-dark canvas + div ul li span {
+  color: #e9ecef !important;
+}
+
+.pie-chart-light canvas + div ul li span {
+  color: #495057 !important;
+}

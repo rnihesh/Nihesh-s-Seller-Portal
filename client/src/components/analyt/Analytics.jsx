@@ -41,9 +41,15 @@ function Analytics() {
             color: isDarkTheme ? "#e9ecef" : "#495057",
             font: {
               weight: "bold",
+              size: 10, // Reduced font size for legend
             },
+            padding: 8, // Reduced padding between legend items
+            boxWidth: 12, // Smaller legend color boxes
+            boxHeight: 12,
           },
-          position: "bottom",
+          position: "right", // Changed from "bottom" to "right" for pie charts
+          maxHeight: 200, // Limit legend height
+          maxWidth: 150, // Limit legend width
         },
         title: {
           display: true,
@@ -162,6 +168,8 @@ function Analytics() {
   };
 
   const prepareCategoryChartData = () => {
+
+    const isDarkTheme = theme === "dark";
     // Count products by category
     const categoryCount = {};
     products.forEach((product) => {
@@ -208,6 +216,7 @@ function Analytics() {
               ? "rgba(255, 255, 255, 0.1)"
               : "rgba(255, 255, 255, 1)",
           borderWidth: 2,
+          color: isDarkTheme ? "#e9ecef" : "#495057",
         },
       ],
     });
@@ -329,7 +338,7 @@ function Analytics() {
 
         const canvas = await html2canvas(chart, {
           scale: 2,
-          backgroundColor: theme === "dark" ? "#2b3035" : "#ffffff",
+          backgroundColor: theme === "dark" ? "#ffffff" : "#ffffff",
         });
 
         const imgData = canvas.toDataURL("image/png");
@@ -511,7 +520,28 @@ function Analytics() {
                   <Chart
                     type="pie"
                     data={categoryChartData}
-                    options={getChartOptions("Products by Category")}
+                    options={{
+                      ...getChartOptions("Products by Category"),
+                      plugins: {
+                        ...getChartOptions("Products by Category").plugins,
+                        legend: {
+                          display: false, // Hide the legend completely
+                        },
+                        tooltip: {
+                          callbacks: {
+                            // Show category and value in tooltip
+                            label: function(context) {
+                              const label = context.label || '';
+                              const value = context.parsed || 0;
+                              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                              const percentage = Math.round((value / total) * 100);
+                              return `${label}: ${value} (${percentage}%)`;
+                            }
+                          }
+                        }
+                      }
+                    }}
+                    className={`pie-chart-${theme}`}
                   />
                 </div>
               </div>

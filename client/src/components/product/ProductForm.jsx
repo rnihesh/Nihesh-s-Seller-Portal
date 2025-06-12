@@ -4,6 +4,8 @@ import axios from "axios";
 import { userContextObj } from "../contexts/UserContext";
 import { getBaseUrl } from "../../utils/config";
 import "./ProductForm.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ProductForm() {
   const { currentUser } = useContext(userContextObj);
@@ -106,35 +108,54 @@ function ProductForm() {
     if (!file) return;
 
     setImageFile(file);
-
+    setError("");
+    
     // Create a preview
     const reader = new FileReader();
     reader.onload = () => {
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
+    
+    // Set uploading status immediately
+    setSuccess("Uploading image...");
+    setUploadingImage(true);
+    
+    // Auto-upload the file
+    uploadImage(file);
   };
 
-  // Handle image upload
-  const handleImageUpload = async () => {
-    if (!imageFile) {
-      return setError("Please select an image file first");
-    }
-
-    setUploadingImage(true);
-    setError("");
+  // Create a separate upload function that can be called by both handleImageChange and paste handler
+  const uploadImage = async (file) => {
+    // Create a toast ID for tracking
+    const toastId = toast.loading("Preparing to upload image...", {
+      position: "bottom-right",
+      autoClose: false,
+      closeButton: false,
+      closeOnClick: false,
+      draggable: false,
+    });
 
     try {
+      setUploadingImage(true);
+      setError("");
+      
       const formData = new FormData();
-      formData.append("productImage", imageFile);
+      formData.append("productImage", file);
 
       console.log(
         "Uploading image:",
-        imageFile.name,
+        file.name,
         "Size:",
-        Math.round(imageFile.size / 1024),
+        Math.round(file.size / 1024),
         "KB"
       );
+
+      // Update toast to show upload progress - fixed type
+      toast.update(toastId, { 
+        render: "Uploading image... Please wait", 
+        type: "info" 
+      });
 
       const response = await axios.post(
         `${getBaseUrl()}/user/upload-product-image`,
@@ -143,7 +164,6 @@ function ProductForm() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          // Add timeout and retry config
           timeout: 30000, // 30 seconds
         }
       );
@@ -157,29 +177,45 @@ function ProductForm() {
           pImagePublicId: response.data.publicId,
         }));
 
-        setSuccess("Image uploaded successfully!");
-        setTimeout(() => setSuccess(""), 3000);
+        // Update toast to show success - fixed type
+        toast.update(toastId, { 
+          render: "Image uploaded successfully! ✅", 
+          type: "success",
+          autoClose: 3000,
+          closeButton: true,
+          closeOnClick: true,
+          draggable: true,
+          isLoading: false
+        });
+
+        setSuccess("Image ready to use");
       } else {
         throw new Error(response.data.message || "Upload failed");
       }
     } catch (err) {
       console.error("Error uploading image:", err);
+      
+      // Update toast to show error - fixed type
+      toast.update(toastId, { 
+        render: `Upload failed: ${err.message}`, 
+        type: "error",
+        autoClose: 3000,
+        closeButton: true,
+        isLoading: false
+      });
 
       // Detailed error handling
       if (err.response) {
-        // Server responded with error
         const errorMsg =
           err.response.data.message ||
           err.response.data.error ||
           "Upload failed";
-        setError(`Server error: ${errorMsg}`);
+        setError(`Upload failed: ${errorMsg}`);
       } else if (err.request) {
-        // Request made but no response
         setError(
           "No response received from server. Check your network connection."
         );
       } else {
-        // Request setup error
         setError(`Upload error: ${err.message}`);
       }
     } finally {
@@ -289,7 +325,8 @@ function ProductForm() {
     }
   };
 
-  // Add clipboard paste handler
+  // Update the clipboard paste handler to properly handle errors
+
   useEffect(() => {
     const handlePaste = (e) => {
       const items = e.clipboardData?.items;
@@ -298,7 +335,9 @@ function ProductForm() {
       for (let i = 0; i < items.length; i++) {
         if (items[i].type.indexOf('image') !== -1) {
           const file = items[i].getAsFile();
+          
           setImageFile(file);
+          setError("");
           
           // Create a preview
           const reader = new FileReader();
@@ -307,9 +346,11 @@ function ProductForm() {
           };
           reader.readAsDataURL(file);
           
-          // Show success message
-          setSuccess("Image from clipboard ready. Click Upload to save it.");
-          setTimeout(() => setSuccess(""), 3000);
+          // Set uploading status immediately
+          setUploadingImage(true);
+          
+          // Start upload
+          uploadImage(file);
           break;
         }
       }
@@ -343,6 +384,15 @@ function ProductForm() {
 
   return (
     <div className="container product-form-container mt-5">
+      <ToastContainer
+        position="bottom-right"
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        theme="light"
+      />
+      
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
           <div className="card shadow-sm">
@@ -520,38 +570,43 @@ function ProductForm() {
                       id="productImage"
                       accept="image/*"
                       onChange={handleImageChange}
+                      disabled={uploadingImage}
                     />
-                    <button
-                      className="btn btn-outline-secondary"
-                      type="button"
-                      onClick={handleImageUpload}
-                      disabled={!imageFile || uploadingImage}
-                    >
-                      {uploadingImage ? (
-                        <>
-                          <span
-                            className="spinner-border spinner-border-sm me-1"
-                            role="status"
-                            aria-hidden="true"
-                            style={{ width: "1rem", height: "1rem" }}
-                          ></span>
-                          <span className="text-center">Uploading...</span>
-                        </>
-                      ) : (
-                        "Upload"
-                      )}
-                    </button>
                   </div>
-                  <small className="text-muted">
-                    Select an image file (max 5MB) and click Upload
+                  <small className="text-muted d-block">
+                    Select an image file (max 5MB) - upload starts automatically
                   </small>
-                  {error && <div className="alert alert-danger">{error}</div>}
-                  {formData.pImageUrl && (
-                    <div className="form-text text-success">
-                      <i className="bi bi-check-circle-fill me-1"></i>
-                      {success}
-                    </div>
-                  )}
+                  <small className="text-muted d-block">
+                    <i className="bi bi-clipboard me-1"></i>
+                    You can also paste an image directly from clipboard anywhere on this page
+                  </small>
+                  
+                  {/* Upload Status Badge */}
+                  <div className="mt-2">
+                    {uploadingImage && (
+                      <span className="badge bg-info d-inline-flex align-items-center me-2">
+                        <span
+                          className="spinner-border spinner-border-sm me-1"
+                          role="status"
+                          aria-hidden="true"
+                          style={{ width: "0.8rem", height: "0.8rem" }}
+                        ></span>
+                        Uploading...
+                      </span>
+                    )}
+                    {formData.pImageUrl && !uploadingImage && (
+                      <span className="badge bg-success d-inline-flex align-items-center">
+                        <i className="bi bi-image me-1"></i>
+                        Image Ready
+                      </span>
+                    )}
+                    {error && (
+                      <span className="badge bg-danger d-inline-flex align-items-center">
+                        <i className="bi bi-exclamation-triangle me-1"></i>
+                        Upload Error
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {imagePreview && (
@@ -561,6 +616,7 @@ function ProductForm() {
                       src={imagePreview}
                       alt="Product preview"
                       className="img-thumbnail preview-image"
+                      style={{ opacity: uploadingImage ? 0.6 : 1 }}
                     />
                   </div>
                 )}
@@ -576,10 +632,10 @@ function ProductForm() {
                   <button
                     type="submit"
                     className="btn btn-primary"
-                    disabled={loading}
+                    disabled={loading || uploadingImage}
                     style={{ background: "#e85f5c", border: "none" }}
                   >
-                    {loading ? (
+                    {loading || uploadingImage ? (
                       <>
                         <span
                           className="spinner-border spinner-border-sm me-2"
@@ -587,7 +643,7 @@ function ProductForm() {
                           aria-hidden="true"
                           style={{ width: "1rem", height: "1rem" }}
                         ></span>
-                        <span>Saving...</span>
+                        <span>{uploadingImage ? "Uploading Image..." : "Saving..."}</span>
                       </>
                     ) : isEditing ? (
                       "Update Product"
