@@ -24,6 +24,10 @@ function Home() {
   const [otpInput, setOtpInput] = useState("");
   const [verificationEmail, setVerificationEmail] = useState("");
   const [verificationId, setVerificationId] = useState("");
+  // Add these new loading states
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const navigate = useNavigate();
 
   // FIXED: Only update context with Clerk data if we don't already have complete user data
@@ -202,8 +206,12 @@ function Home() {
     setTimeout(checkUserState, 100);
   }
 
-  // FIXED: Simplified createAndSave function
+  // FIXED: Simplified createAndSave function with loading state
   async function createAndSave(userData) {
+    setRegisterLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
       // Validate required fields
       if (
@@ -256,10 +264,12 @@ function Home() {
     } catch (err) {
       console.error("Error creating user:", err.response?.data || err.message);
       setError(err.response?.data?.message || err.message);
+    } finally {
+      setRegisterLoading(false);
     }
   }
 
-  // Phone modal submit handler
+  // Phone modal submit handler with loading state
   function handleRegisterSubmit(e) {
     e.preventDefault();
 
@@ -285,13 +295,15 @@ function Home() {
     createAndSave(userData);
   }
 
-  // FIXED: OTP verification with proper baseID handling
+  // FIXED: OTP verification with proper baseID handling and loading state
   async function handleVerifyOtp(e) {
     e.preventDefault();
+    setOtpLoading(true);
     setError("");
 
     if (!otpInput || otpInput.length !== 6 || isNaN(otpInput)) {
       setError("Please enter a valid 6-digit OTP");
+      setOtpLoading(false);
       return;
     }
 
@@ -328,11 +340,14 @@ function Home() {
       setError(
         err.response?.data?.message || "Verification failed. Please try again."
       );
+    } finally {
+      setOtpLoading(false);
     }
   }
 
-  // Resend OTP handler
+  // Resend OTP handler with loading state
   async function handleResendOtp() {
+    setResendLoading(true);
     setError("");
     setSuccess("");
 
@@ -350,6 +365,8 @@ function Home() {
     } catch (err) {
       console.error("Error resending OTP:", err);
       setError(err.response?.data?.message || "Failed to resend OTP.");
+    } finally {
+      setResendLoading(false);
     }
   }
 
@@ -521,12 +538,13 @@ function Home() {
                 <input
                   id="phoneInput"
                   type="tel"
-                  className="form-control"
+                  className="form-control inpfc"
                   placeholder="10-15 digit phone number"
                   value={phoneInput}
                   onChange={(e) => setPhoneInput(e.target.value)}
                   required
                   pattern="^\d{7,15}$"
+                  disabled={registerLoading}
                 />
                 <small className="text-muted">
                   We'll use this to contact you about your products.
@@ -539,19 +557,23 @@ function Home() {
                 <input
                   id="companyInput"
                   type="text"
-                  className="form-control"
+                  className="form-control inpfc"
                   placeholder="Your company name"
                   value={companyInput}
                   onChange={(e) => setCompanyInput(e.target.value)}
                   required
+                  disabled={registerLoading}
                 />
               </div>
+              {error && <div className="alert alert-danger">{error}</div>}
+              {success && <div className="alert alert-success">{success}</div>}
             </div>
             <div className="modal-footer">
               <button
                 type="button"
                 className="btn btn-outline-secondary"
                 onClick={() => setShowPhoneModal(false)}
+                disabled={registerLoading}
               >
                 Cancel
               </button>
@@ -559,19 +581,24 @@ function Home() {
                 type="submit"
                 className="btn btn-primary"
                 style={{ background: "var(--accent-color)", border: "none" }}
+                disabled={registerLoading}
               >
-                Register
+                {registerLoading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                      style={{ width: "0.8rem", height: "0.8rem" }}
+                    ></span>
+                    <span>Registering...</span>
+                  </>
+                ) : (
+                  "Register"
+                )}
               </button>
             </div>
           </form>
-          {error && (
-            <p
-              className="text-danger text-center fs-5 font-monospace"
-              style={{ marginTop: "20px" }}
-            >
-              {error}
-            </p>
-          )}
         </div>
       </div>
 
@@ -609,13 +636,14 @@ function Home() {
                 <input
                   id="otpInput"
                   type="text"
-                  className="form-control otp-input"
+                  className="form-control otp-input inpfc"
                   placeholder="6-digit code"
                   value={otpInput}
                   onChange={(e) => setOtpInput(e.target.value)}
                   required
                   maxLength="6"
                   pattern="\d{6}"
+                  disabled={otpLoading}
                 />
               </div>
               {error && <div className="alert alert-danger">{error}</div>}
@@ -626,15 +654,42 @@ function Home() {
                 type="button"
                 className="btn btn-link text-secondary"
                 onClick={handleResendOtp}
+                disabled={resendLoading || otpLoading}
               >
-                Resend Code
+                {resendLoading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-1"
+                      role="status"
+                      aria-hidden="true"
+                      style={{ width: "0.8rem", height: "0.8rem" }}
+                    ></span>
+                    <span>Resending...</span>
+                  </>
+                ) : (
+                  "Resend Code"
+                )}
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
                 style={{ background: "var(--accent-color)", border: "none" }}
+                disabled={otpLoading}
               >
-                Verify Email
+                {otpLoading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                      
+                      style={{ width: "0.8rem", height: "0.8rem" }}
+                    ></span>
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  "Verify Email"
+                )}
               </button>
             </div>
           </form>

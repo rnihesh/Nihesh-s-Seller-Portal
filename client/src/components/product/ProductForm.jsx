@@ -577,7 +577,7 @@ function ProductForm() {
                     Select an image file (max 5MB) - upload starts automatically
                   </small>
                   <small className="text-muted d-block">
-                    <i className="bi bi-clipboard me-1"></i>
+                    <i className="bi bi-clipboard"></i>
                     You can also paste an image directly from clipboard anywhere on this page
                   </small>
                   

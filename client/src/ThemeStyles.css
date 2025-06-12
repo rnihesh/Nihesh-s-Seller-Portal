@@ -89,6 +89,16 @@ a:hover {
   border-color: var(--input-border);
   color: var(--text-primary);
 }
+.inpfc{
+
+  background-color: var(--input-background) !important;
+  border-color: var(--input-border) !important;
+  /* color: var(--text-secondary) !important; */
+}
+.inpfc::placeholder{
+
+  color: var(--text-secondary) !important;
+}
 
 .form-control:focus,
 .form-select:focus,
