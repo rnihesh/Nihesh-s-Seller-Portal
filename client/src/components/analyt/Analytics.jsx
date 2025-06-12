@@ -5,14 +5,22 @@ import axios from "axios";
 import { Chart } from "primereact/chart";
 import { Button } from "primereact/button";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { FaFileDownload, FaChartPie, FaChartBar, FaStar, FaTag, FaMoneyBillWave } from "react-icons/fa";
+import {
+  FaFileDownload,
+  FaChartPie,
+  FaChartBar,
+  FaStar,
+  FaTag,
+  FaMoneyBillWave,
+} from "react-icons/fa";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import CountUp from "../ui/CountUp/CountUp"; // Import the CountUp component
+import CountUp from "../ui/CountUp/CountUp"; 
+import logo from "../../assets/image2.png";
 import "./Analytics.css";
 
 function Analytics() {
-  const { theme } = useContext(ThemeContext); // Use the ThemeContext
+  const { theme } = useContext(ThemeContext); 
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
@@ -169,7 +177,6 @@ function Analytics() {
   };
 
   const prepareCategoryChartData = () => {
-
     const isDarkTheme = theme === "dark";
     // Count products by category
     const categoryCount = {};
@@ -278,181 +285,140 @@ function Analytics() {
   };
 
   const exportToPDF = async () => {
-    if (!chartsRef.current) {
-      console.error("Charts reference is not available");
-      setError("Cannot generate PDF: charts not found");
-      return;
-    }
+  if (!chartsRef.current) {
+    console.error("Charts reference is not available");
+    setError("Cannot generate PDF: charts not found");
+    return;
+  }
 
-    try {
-      // Make sure jsPDF is properly instantiated
-      const pdf = new jsPDF("portrait", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+  try {
+    const pdf = new jsPDF("portrait", "mm", "a4");
+    // PDF metadata
+    pdf.setProperties({
+      title: "Inventory Analytics Report",
+      author: "Nihesh Rachakonda",
+    });
 
-      console.log("Starting PDF generation...");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = { top: 20, left: 20, right: 20, bottom: 20 };
+    const usableWidth = pageWidth - margin.left - margin.right;
+    let y = margin.top;
 
-      // Add title
-      pdf.setFontSize(20);
-      pdf.setTextColor(232, 95, 92);
-      pdf.text("Inventory Analytics Report", pdfWidth / 2, 20, {
-        align: "center",
+    // — HEADER —
+    pdf.setFontSize(20);
+    pdf.setTextColor(232, 95, 92);
+    pdf.text("Inventory Analytics Report", pageWidth / 2, y, {
+      align: "center",
+    });
+    y += 8;
+    pdf.setFontSize(16);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(currentUser.company, pageWidth / 2, y, { align: "center" });
+    y += 8;
+    pdf.setFontSize(10);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text(
+      `Generated on: ${new Date().toLocaleString()}`,
+      pageWidth / 2,
+      y,
+      { align: "center" }
+    );
+    y += 12;
+
+    // Seller Info
+    pdf.setFontSize(12);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(`Seller ID: ${currentUser.baseID}`, margin.left, y);
+    pdf.text(`Total Products: ${products.length}`, margin.left, y + 7);
+    y += 15;
+
+    // Preload logo for footer
+    const imgLogo = new Image();
+    imgLogo.src = logo;
+    await new Promise((res) => (imgLogo.onload = res));
+
+    // — INSIGHTS —
+    const insightsSection = chartsRef.current.querySelector(
+      ".analytics-insights"
+    );
+    if (insightsSection) {
+      const canvas = await html2canvas(insightsSection, {
+        scale: 2,
+        backgroundColor: "#ffffff",
       });
-
-      // Add company name
-      pdf.setFontSize(16);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text(`${currentUser.company}`, pdfWidth / 2, 30, {
-        align: "center",
-      });
-
-      // Add timestamp
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(
-        `Generated on: ${new Date().toLocaleString()}`,
-        pdfWidth / 2,
-        37,
-        { align: "center" }
-      );
-
-      // Add seller info
-      pdf.setFontSize(12);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text(`Seller ID: ${currentUser.baseID}`, 20, 50);
-      pdf.text(`Total Products: ${products.length}`, 20, 57);
-
-      let yPosition = 65; // Start position after header info
-      
-      // Add insights section first
-      const insightsSection = chartsRef.current.querySelector(
-        ".analytics-insights"
-      );
-      if (insightsSection) {
-        const insightsCanvas = await html2canvas(insightsSection, {
-          scale: 2,
-          backgroundColor: theme === "dark" ? "#ffffff" : "#ffffff", // Use white background for PDF
-        });
-
-        const insightsImgData = insightsCanvas.toDataURL("image/png");
-        const insightsWidth = pdfWidth - 40; // 20mm margin on each side
-        const insightsHeight =
-          (insightsCanvas.height * insightsWidth) / insightsCanvas.width;
-
-        // Check if insights will fit on current page, otherwise add a new page
-        if (yPosition + insightsHeight > pdfHeight - 60) {
-          pdf.addPage();
-          yPosition = 20;
-        }
-
-        pdf.addImage(
-          insightsImgData,
-          "PNG",
-          20,
-          yPosition,
-          insightsWidth,
-          insightsHeight
-        );
-        
-        yPosition += insightsHeight + 20; // Move position down after insights
-      }
-
-      // Get all chart elements
-      const charts = chartsRef.current.querySelectorAll(".analytics-card");
-
-      for (let i = 0; i < charts.length; i++) {
-        const chart = charts[i];
-
-        const canvas = await html2canvas(chart, {
-          scale: 2,
-          backgroundColor: "#ffffff", // Always white for PDF
-        });
-
-        const imgData = canvas.toDataURL("image/png");
-
-        // Calculate image width and height to fit on page
-        const imgWidth = pdfWidth - 40; // 20mm margin on each side
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        // Check if chart will fit on current page, otherwise add a new page
-        if (yPosition + imgHeight > pdfHeight - 60) {
-          pdf.addPage();
-          yPosition = 20; // Reset position at top of new page
-        }
-
-        pdf.addImage(imgData, "PNG", 20, yPosition, imgWidth, imgHeight);
-        yPosition += imgHeight + 20; // Add spacing between charts
-      }
-
-      // Add a new page for the footer if last chart is too close to bottom
-      if (yPosition > pdfHeight - 60) {
+      const imgData = canvas.toDataURL("image/png");
+      const imgW = usableWidth;
+      const imgH = (canvas.height * imgW) / canvas.width;
+      const imgX = margin.left + (usableWidth - imgW) / 2;
+      if (y + imgH > pageHeight - margin.bottom) {
         pdf.addPage();
-        yPosition = pdfHeight - 60; // Position footer at bottom of page
-      } else {
-        yPosition = pdfHeight - 60; // Position footer at bottom of page
+        y = margin.top;
       }
-
-      // Add logo image
-      try {
-        const img = new Image();
-        img.src = "../../src/assets/image2.png";
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          // Add a timeout to prevent hanging if image doesn't load
-          setTimeout(reject, 3000);
-        });
-
-        // Position logo centered above the line
-        const logoWidth = 30; // width in mm
-        const logoHeight = 25; // height in mm
-        pdf.addImage(
-          img,
-          "PNG",
-          (pdfWidth - logoWidth) / 2,
-          yPosition - 30,
-          logoWidth,
-          logoHeight
-        );
-      } catch (imgError) {
-        console.error("Error loading logo image:", imgError);
-        // Continue without the logo if it fails to load
-      }
-
-      // Add branded footer on the last page
-      pdf.setDrawColor(232, 95, 92); // accent color
-      pdf.setLineWidth(0.5);
-      pdf.line(20, yPosition, pdfWidth - 20, yPosition);
-
-      pdf.setFontSize(10);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text(
-        "Report generated using Nihesh's Seller Portal",
-        pdfWidth / 2,
-        yPosition + 7,
-        {
-          align: "center",
-        }
-      );
-
-      pdf.setFontSize(8);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(
-        "© Nihesh's Seller Portal 2025",
-        pdfWidth / 2,
-        yPosition + 13,
-        {
-          align: "center",
-        }
-      );
-
-      // Save PDF
-      pdf.save("inventory-analytics-report.pdf");
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      setError("Failed to generate PDF. Please try again.");
+      pdf.addImage(imgData, "PNG", imgX, y, imgW, imgH);
+      y += imgH + 12;
     }
-  };
+
+    // — CHARTS —
+    const cards = chartsRef.current.querySelectorAll(".analytics-card");
+    for (let card of cards) {
+      const canvas = await html2canvas(card, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const imgW = usableWidth;
+      const imgH = (canvas.height * imgW) / canvas.width;
+      const imgX = margin.left + (usableWidth - imgW) / 2;
+      if (y + imgH > pageHeight - margin.bottom) {
+        pdf.addPage();
+        y = margin.top;
+      }
+      pdf.addImage(imgData, "PNG", imgX, y, imgW, imgH);
+      y += imgH + 12;
+    }
+
+    // — FOOTER —
+    if (y > pageHeight - margin.bottom) {
+      pdf.addPage();
+      y = margin.top;
+    }
+    const footerY = pageHeight - margin.bottom + 5;
+    pdf.setDrawColor(232, 95, 92);
+    pdf.setLineWidth(0.5);
+    pdf.line(margin.left, footerY, pageWidth - margin.right, footerY);
+
+    // logo centered above footer line
+    const logoW = 20;
+    const logoH = (imgLogo.height * logoW) / imgLogo.width;
+    const logoX = pageWidth / 2 - logoW / 2;
+    pdf.addImage(imgLogo, "PNG", logoX, footerY - logoH - 3, logoW, logoH);
+
+    // footer text
+    pdf.setFontSize(10);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(
+      "Report generated using Nihesh's Seller Portal",
+      pageWidth / 2,
+      footerY + 5,
+      { align: "center" }
+    );
+    pdf.setFontSize(8);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text(
+      `© Nihesh's Seller Portal 2025`,
+      pageWidth / 2,
+      footerY + 10,
+      { align: "center" }
+    );
+
+    // — SAVE —
+    pdf.save("inventory-analytics-report.pdf");
+  } catch (err) {
+    console.error("Error generating PDF:", err);
+    setError("Failed to generate PDF. Please try again.");
+  }
+};
 
   if (!currentUser?.baseID) {
     return (
@@ -528,7 +494,7 @@ function Analytics() {
           <div className="analytics-section mb-5">
             <div className="analytics-insights highlight-card">
               <h4 className="text-center mb-4">Key Inventory Highlights</h4>
-              
+
               <div className="row insight-highlights">
                 <div className="col-md-4">
                   <div className="insight-highlight-card">
@@ -537,23 +503,28 @@ function Analytics() {
                     </div>
                     <h5>Most Stocked Product</h5>
                     <div className="insight-product-name">
-                      {products.reduce((prev, current) => 
-                        prev.pQuantity > current.pQuantity ? prev : current
-                      ).pName}
+                      {
+                        products.reduce((prev, current) =>
+                          prev.pQuantity > current.pQuantity ? prev : current
+                        ).pName
+                      }
                     </div>
                     <div className="insight-count">
-                      <CountUp 
-                        to={products.reduce((prev, current) => 
-                          prev.pQuantity > current.pQuantity ? prev : current
-                        ).pQuantity}
+                      <CountUp
+                        to={
+                          products.reduce((prev, current) =>
+                            prev.pQuantity > current.pQuantity ? prev : current
+                          ).pQuantity
+                        }
                         duration={2}
                         separator=","
                         className="highlight-count"
-                      /> <span>units</span>
+                      />{" "}
+                      <span>units</span>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="col-md-4">
                   <div className="insight-highlight-card">
                     <div className="insight-icon">
@@ -561,15 +532,20 @@ function Analytics() {
                     </div>
                     <h5>Highest Price Item</h5>
                     <div className="insight-product-name">
-                      {products.reduce((prev, current) => 
-                        prev.pPrice > current.pPrice ? prev : current
-                      ).pName}
+                      {
+                        products.reduce((prev, current) =>
+                          prev.pPrice > current.pPrice ? prev : current
+                        ).pName
+                      }
                     </div>
                     <div className="insight-count">
-                      ₹<CountUp 
-                        to={products.reduce((prev, current) => 
-                          prev.pPrice > current.pPrice ? prev : current
-                        ).pPrice}
+                      ₹
+                      <CountUp
+                        to={
+                          products.reduce((prev, current) =>
+                            prev.pPrice > current.pPrice ? prev : current
+                          ).pPrice
+                        }
                         duration={2}
                         separator=","
                         className="highlight-count"
@@ -577,20 +553,26 @@ function Analytics() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="col-md-4">
                   <div className="insight-highlight-card">
                     <div className="insight-icon">
-                      <FaMoneyBillWave style={{ color: "var(--accent-color)" }} />
+                      <FaMoneyBillWave
+                        style={{ color: "var(--accent-color)" }}
+                      />
                     </div>
                     <h5>Total Inventory Value</h5>
                     <div className="insight-product-name text-sm mb-1">
                       Stock Value
                     </div>
                     <div className="insight-count larger">
-                      ₹<CountUp 
-                        to={products.reduce((sum, product) => 
-                          sum + product.pPrice * product.pQuantity, 0)}
+                      ₹
+                      <CountUp
+                        to={products.reduce(
+                          (sum, product) =>
+                            sum + product.pPrice * product.pQuantity,
+                          0
+                        )}
                         duration={2.5}
                         separator=","
                         className="highlight-count"
@@ -626,16 +608,21 @@ function Analytics() {
                         tooltip: {
                           callbacks: {
                             // Show category and value in tooltip
-                            label: function(context) {
-                              const label = context.label || '';
+                            label: function (context) {
+                              const label = context.label || "";
                               const value = context.parsed || 0;
-                              const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                              const percentage = Math.round((value / total) * 100);
+                              const total = context.dataset.data.reduce(
+                                (a, b) => a + b,
+                                0
+                              );
+                              const percentage = Math.round(
+                                (value / total) * 100
+                              );
                               return `${label}: ${value} (${percentage}%)`;
-                            }
-                          }
-                        }
-                      }
+                            },
+                          },
+                        },
+                      },
                     }}
                     className={`pie-chart-${theme}`}
                   />
