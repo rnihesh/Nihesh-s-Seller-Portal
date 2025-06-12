@@ -5,7 +5,7 @@ import "bootstrap/dist/js/bootstrap.bundle.js";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Squares from "../../components/ui/Squares/Squares";
+import Threads from "../../components/ui/Threads/Threads";
 import DecryptedText from "../../components/ui/DecryptedText/DecryptedText";
 import { userContextObj } from "../contexts/UserContext";
 import { getBaseUrl } from "../../utils/config";
@@ -90,7 +90,6 @@ function Home() {
             lastName: user.lastName || prev.lastName,
             email: user.emailAddresses[0]?.emailAddress || prev.email,
             profileImageUrl: user.imageUrl || prev.profileImageUrl,
-          
           }));
         }
       } else if (isLoaded && !isSignedIn) {
@@ -123,7 +122,7 @@ function Home() {
       setCurrentUser((prev) => ({
         ...prev,
         baseID: parsedStored.baseID,
-        company: parsedStored.company
+        company: parsedStored.company,
       }));
     }
     console.log("==============================");
@@ -309,7 +308,7 @@ function Home() {
         setCurrentUser((prev) => ({
           ...prev, // Keep all existing data including baseID
           isVerified: true,
-          company: response.data.payload.companyName
+          company: response.data.payload.companyName,
         }));
 
         setShowOtpModal(false);
@@ -359,14 +358,13 @@ function Home() {
       {/* Animated Hero Section */}
       {!isSignedIn && (
         <div className="position-relative" style={{ minHeight: "60vh" }}>
-          <Squares
-            direction="diagonal"
-            speed={0.5}
-            borderColor="var(--divider-color)"
-            squareSize={60}
-            hoverFillColor="var(--accent-color)"
+          <Threads
+            color={[0.92, 0.37, 0.36]} // Reddish color similar to your accent color
+            amplitude={2.2}
+            distance={0.3}
+            enableMouseInteraction={true}
             className="position-absolute top-0 start-0 w-100 h-100"
-            style={{ zIndex: 0, opacity: 0.15 }}
+            style={{ zIndex: 0, opacity: 0.25 }}
           />
           <div
             className="d-flex flex-column align-items-center justify-content-center text-center position-relative"
