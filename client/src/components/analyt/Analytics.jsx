@@ -5,9 +5,10 @@ import axios from "axios";
 import { Chart } from "primereact/chart";
 import { Button } from "primereact/button";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { FaFileDownload, FaChartPie, FaChartBar } from "react-icons/fa";
+import { FaFileDownload, FaChartPie, FaChartBar, FaStar, FaTag, FaMoneyBillWave } from "react-icons/fa";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import CountUp from "../ui/CountUp/CountUp"; // Import the CountUp component
 import "./Analytics.css";
 
 function Analytics() {
@@ -321,24 +322,50 @@ function Analytics() {
       pdf.text(`Seller ID: ${currentUser.baseID}`, 20, 50);
       pdf.text(`Total Products: ${products.length}`, 20, 57);
 
-      console.log("PDF completed upto text");
-      // Get all chart elements
-      const charts = chartsRef.current.querySelectorAll(".analytics-card");
+      let yPosition = 65; // Start position after header info
+      
+      // Add insights section first
+      const insightsSection = chartsRef.current.querySelector(
+        ".analytics-insights"
+      );
+      if (insightsSection) {
+        const insightsCanvas = await html2canvas(insightsSection, {
+          scale: 2,
+          backgroundColor: theme === "dark" ? "#ffffff" : "#ffffff", // Use white background for PDF
+        });
 
-      let yPosition = 65; // Adjusted for the added company name
+        const insightsImgData = insightsCanvas.toDataURL("image/png");
+        const insightsWidth = pdfWidth - 40; // 20mm margin on each side
+        const insightsHeight =
+          (insightsCanvas.height * insightsWidth) / insightsCanvas.width;
 
-      for (let i = 0; i < charts.length; i++) {
-        const chart = charts[i];
-
-        // Check if we need to add a new page
-        if (i > 0 && yPosition > pdfHeight - 70) {
+        // Check if insights will fit on current page, otherwise add a new page
+        if (yPosition + insightsHeight > pdfHeight - 60) {
           pdf.addPage();
           yPosition = 20;
         }
 
+        pdf.addImage(
+          insightsImgData,
+          "PNG",
+          20,
+          yPosition,
+          insightsWidth,
+          insightsHeight
+        );
+        
+        yPosition += insightsHeight + 20; // Move position down after insights
+      }
+
+      // Get all chart elements
+      const charts = chartsRef.current.querySelectorAll(".analytics-card");
+
+      for (let i = 0; i < charts.length; i++) {
+        const chart = charts[i];
+
         const canvas = await html2canvas(chart, {
           scale: 2,
-          backgroundColor: theme === "dark" ? "#ffffff" : "#ffffff",
+          backgroundColor: "#ffffff", // Always white for PDF
         });
 
         const imgData = canvas.toDataURL("image/png");
@@ -347,72 +374,62 @@ function Analytics() {
         const imgWidth = pdfWidth - 40; // 20mm margin on each side
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
+        // Check if chart will fit on current page, otherwise add a new page
+        if (yPosition + imgHeight > pdfHeight - 60) {
+          pdf.addPage();
+          yPosition = 20; // Reset position at top of new page
+        }
+
         pdf.addImage(imgData, "PNG", 20, yPosition, imgWidth, imgHeight);
-
-        yPosition += imgHeight + 20; // Add 20mm spacing between charts
+        yPosition += imgHeight + 20; // Add spacing between charts
       }
 
-      // Add insights section
-      if (yPosition > pdfHeight - 90) {
+      // Add a new page for the footer if last chart is too close to bottom
+      if (yPosition > pdfHeight - 60) {
         pdf.addPage();
-        yPosition = 20;
+        yPosition = pdfHeight - 60; // Position footer at bottom of page
+      } else {
+        yPosition = pdfHeight - 60; // Position footer at bottom of page
       }
 
-      const insightsSection = chartsRef.current.querySelector(
-        ".analytics-insights"
-      );
-      const insightsCanvas = await html2canvas(insightsSection, {
-        scale: 2,
-        backgroundColor: theme === "dark" ? "#2b3035" : "#ffffff",
-      });
+      // Add logo image
+      try {
+        const img = new Image();
+        img.src = "../../src/assets/image2.png";
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          // Add a timeout to prevent hanging if image doesn't load
+          setTimeout(reject, 3000);
+        });
 
-      const insightsImgData = insightsCanvas.toDataURL("image/png");
-      const insightsWidth = pdfWidth - 40;
-      const insightsHeight =
-        (insightsCanvas.height * insightsWidth) / insightsCanvas.width;
+        // Position logo centered above the line
+        const logoWidth = 30; // width in mm
+        const logoHeight = 25; // height in mm
+        pdf.addImage(
+          img,
+          "PNG",
+          (pdfWidth - logoWidth) / 2,
+          yPosition - 30,
+          logoWidth,
+          logoHeight
+        );
+      } catch (imgError) {
+        console.error("Error loading logo image:", imgError);
+        // Continue without the logo if it fails to load
+      }
 
-      pdf.addImage(
-        insightsImgData,
-        "PNG",
-        20,
-        yPosition,
-        insightsWidth,
-        insightsHeight
-      );
-      console.log("Completed upto all charts");
-
-      // Load and add logo image
-      const img = new Image();
-      img.src = "../../src/assets/image2.png";
-      await new Promise((resolve) => {
-        img.onload = resolve;
-      });
-      console.log("image setting : ", img);
-
-      // Position logo centered above the line
-      const logoWidth = 30; // width in mm
-      const logoHeight = 25; // height in mm
-      pdf.addImage(
-        img,
-        "PNG",
-        (pdfWidth - logoWidth) / 2,
-        pdfHeight - 55,
-        logoWidth,
-        logoHeight
-      );
-
-      console.log("Will start footer pdf");
       // Add branded footer on the last page
       pdf.setDrawColor(232, 95, 92); // accent color
       pdf.setLineWidth(0.5);
-      pdf.line(20, pdfHeight - 25, pdfWidth - 20, pdfHeight - 25);
+      pdf.line(20, yPosition, pdfWidth - 20, yPosition);
 
       pdf.setFontSize(10);
       pdf.setTextColor(0, 0, 0);
       pdf.text(
         "Report generated using Nihesh's Seller Portal",
         pdfWidth / 2,
-        pdfHeight - 18,
+        yPosition + 7,
         {
           align: "center",
         }
@@ -423,7 +440,7 @@ function Analytics() {
       pdf.text(
         "© Nihesh's Seller Portal 2025",
         pdfWidth / 2,
-        pdfHeight - 12,
+        yPosition + 13,
         {
           align: "center",
         }
@@ -507,6 +524,85 @@ function Analytics() {
         </div>
       ) : (
         <div ref={chartsRef} className="charts-container">
+          {/* Key Insights Section - Now First */}
+          <div className="analytics-section mb-5">
+            <div className="analytics-insights highlight-card">
+              <h4 className="text-center mb-4">Key Inventory Highlights</h4>
+              
+              <div className="row insight-highlights">
+                <div className="col-md-4">
+                  <div className="insight-highlight-card">
+                    <div className="insight-icon">
+                      <FaStar style={{ color: "var(--accent-color)" }} />
+                    </div>
+                    <h5>Most Stocked Product</h5>
+                    <div className="insight-product-name">
+                      {products.reduce((prev, current) => 
+                        prev.pQuantity > current.pQuantity ? prev : current
+                      ).pName}
+                    </div>
+                    <div className="insight-count">
+                      <CountUp 
+                        to={products.reduce((prev, current) => 
+                          prev.pQuantity > current.pQuantity ? prev : current
+                        ).pQuantity}
+                        duration={2}
+                        separator=","
+                        className="highlight-count"
+                      /> <span>units</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="col-md-4">
+                  <div className="insight-highlight-card">
+                    <div className="insight-icon">
+                      <FaTag style={{ color: "var(--accent-color)" }} />
+                    </div>
+                    <h5>Highest Price Item</h5>
+                    <div className="insight-product-name">
+                      {products.reduce((prev, current) => 
+                        prev.pPrice > current.pPrice ? prev : current
+                      ).pName}
+                    </div>
+                    <div className="insight-count">
+                      ₹<CountUp 
+                        to={products.reduce((prev, current) => 
+                          prev.pPrice > current.pPrice ? prev : current
+                        ).pPrice}
+                        duration={2}
+                        separator=","
+                        className="highlight-count"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="col-md-4">
+                  <div className="insight-highlight-card">
+                    <div className="insight-icon">
+                      <FaMoneyBillWave style={{ color: "var(--accent-color)" }} />
+                    </div>
+                    <h5>Total Inventory Value</h5>
+                    <div className="insight-product-name text-sm mb-1">
+                      Stock Value
+                    </div>
+                    <div className="insight-count larger">
+                      ₹<CountUp 
+                        to={products.reduce((sum, product) => 
+                          sum + product.pPrice * product.pQuantity, 0)}
+                        duration={2.5}
+                        separator=","
+                        className="highlight-count"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Original Charts - Now follow after the insights */}
           <div className="analytics-section row">
             <div className="col-md-6">
               <div className="analytics-card">
@@ -581,69 +677,6 @@ function Analytics() {
                   options={getChartOptions("Current Stock by Product")}
                 />
               </div>
-            </div>
-          </div>
-
-          <div className="analytics-section">
-            <div className="analytics-insights">
-              <h4>Key Inventory Insights</h4>
-              <ul className="insights-list">
-                {products.length > 0 && (
-                  <>
-                    <li className="insight-item">
-                      <span className="insight-title">
-                        Most Stocked Product:
-                      </span>
-                      <span className="insight-value">
-                        {
-                          products.reduce((prev, current) =>
-                            prev.pQuantity > current.pQuantity ? prev : current
-                          ).pName
-                        }{" "}
-                        (
-                        {
-                          products.reduce((prev, current) =>
-                            prev.pQuantity > current.pQuantity ? prev : current
-                          ).pQuantity
-                        }{" "}
-                        units)
-                      </span>
-                    </li>
-                    <li className="insight-item">
-                      <span className="insight-title">Highest Price Item:</span>
-                      <span className="insight-value">
-                        {
-                          products.reduce((prev, current) =>
-                            prev.pPrice > current.pPrice ? prev : current
-                          ).pName
-                        }{" "}
-                        (₹
-                        {
-                          products.reduce((prev, current) =>
-                            prev.pPrice > current.pPrice ? prev : current
-                          ).pPrice
-                        }
-                        )
-                      </span>
-                    </li>
-                    <li className="insight-item">
-                      <span className="insight-title">
-                        Total Inventory Value:
-                      </span>
-                      <span className="insight-value">
-                        ₹
-                        {products
-                          .reduce(
-                            (sum, product) =>
-                              sum + product.pPrice * product.pQuantity,
-                            0
-                          )
-                          .toLocaleString()}
-                      </span>
-                    </li>
-                  </>
-                )}
-              </ul>
             </div>
           </div>
         </div>
