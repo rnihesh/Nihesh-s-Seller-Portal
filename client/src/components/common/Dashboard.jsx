@@ -24,6 +24,7 @@ function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const navigate = useNavigate();
 
   // Log currentUser and localStorage user on Dashboard load
@@ -136,6 +137,7 @@ function Dashboard() {
 
   const handleDeleteProduct = async (productName) => {
     try {
+      setDeleteLoading(true);
       await axios.delete(`${getBaseUrl()}/user/delete`, {
         data: {
           userId: currentUser.baseID,
@@ -164,10 +166,12 @@ function Dashboard() {
 
       // Close the modal
       setShowDeleteModal(false);
+      setDeleteLoading(false);
     } catch (err) {
       console.error("Error deleting product:", err);
       setError("Failed to delete product. Please try again.");
       setShowDeleteModal(false);
+      setDeleteLoading(false);
     }
   };
 
@@ -492,17 +496,30 @@ function Dashboard() {
                 className="btn-close"
                 onClick={() => setShowDeleteModal(false)}
                 aria-label="Close"
+                disabled={deleteLoading}
               ></button>
             </div>
             <div className="modal-body">
-              <p>Are you sure you want to delete "{productToDelete?.pName}"?</p>
-              <p className="text-danger">This action cannot be undone.</p>
+              {deleteLoading ? (
+                <div className="text-center py-4">
+                  <div className="spinner-border text-danger mb-3" role="status">
+                    <span className="visually-hidden">Deleting...</span>
+                  </div>
+                  <p className="mb-0">Deleting product...</p>
+                </div>
+              ) : (
+                <>
+                  <p>Are you sure you want to delete "{productToDelete?.pName}"?</p>
+                  <p className="text-danger">This action cannot be undone.</p>
+                </>
+              )}
             </div>
             <div className="modal-footer">
               <button
                 type="button"
                 className="btn btn-outline-secondary"
                 onClick={() => setShowDeleteModal(false)}
+                disabled={deleteLoading}
               >
                 Cancel
               </button>
@@ -512,8 +529,21 @@ function Dashboard() {
                 onClick={() =>
                   productToDelete && handleDeleteProduct(productToDelete.pName)
                 }
+                disabled={deleteLoading}
               >
-                Delete Product
+                {deleteLoading ? (
+                  <>
+                    <span 
+                      className="spinner-border spinner-border-sm me-2" 
+                      role="status" 
+                      aria-hidden="true"
+                      style={{width: "0.8rem", height: "0.8rem"}}
+                    ></span>
+                   <span> Deleting...</span>
+                  </>
+                ) : (
+                  "Delete Product"
+                )}
               </button>
             </div>
           </div>

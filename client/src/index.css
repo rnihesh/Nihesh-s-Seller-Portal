@@ -69,3 +69,22 @@ html {
   border-color: rgba(25, 135, 84, 0.5);
   color: #d1f2eb;
 }
+
+
+@media (max-width: 480px) {
+  .Toastify__toast {
+    width: 90% !important;
+    min-width: unset !important;
+    margin: 0 auto !important;
+    border-radius: 10px;
+  }
+
+  .Toastify__toast-container {
+    padding: 0 10px !important;
+  }
+
+  .Toastify__toast-body {
+    font-size: 0.9rem;
+    word-break: break-word;
+  }
+}

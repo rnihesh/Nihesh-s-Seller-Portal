@@ -6,6 +6,7 @@ import { getBaseUrl } from "../../utils/config";
 import "./ProductForm.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThemeContext } from "../contexts/ThemeContext";
 
 function ProductForm() {
   const { currentUser } = useContext(userContextObj);
@@ -13,6 +14,7 @@ function ProductForm() {
   const location = useLocation();
   const isEditing = location.state?.isEditing || false;
   const editProduct = location.state?.product || null;
+  const {theme } = useContext(ThemeContext)
 
   useEffect(() => {
     // Scroll to the top of the page when component mounts
@@ -390,7 +392,7 @@ function ProductForm() {
         closeOnClick
         pauseOnFocusLoss
         draggable
-        theme="light"
+        theme={theme === "dark" ? "dark" : "light"}
       />
       
       <div className="row justify-content-center">
