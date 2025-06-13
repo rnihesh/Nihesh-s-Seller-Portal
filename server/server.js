@@ -42,3 +42,10 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
   next();
 });
+
+
+//error handler
+app.use((err, req, res, next)=>{
+  console.log("Error object in express error handler : ", err);
+  res.send({message:err.message})
+})

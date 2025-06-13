@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --watch server.js"
   },
   "author": "rachakonda nihesh",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@clerk/clerk-react": "^5.31.9",
+    "@clerk/express": "^1.6.0",
     "@google/generative-ai": "^0.24.1",
     "@react-email/components": "^0.0.41",
     "cloudinary": "^1.41.3",
