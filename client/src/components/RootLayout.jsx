@@ -22,21 +22,52 @@ if (!PUBLISHABLE_KEY) {
 function RootLayout({ pageProps }) {
   const { theme } = useContext(ThemeContext);
   useEffect(() => {
-    const payload = {
-      url: location.href,
-      userAgent: navigator.userAgent,
-      language:   navigator.language,
-      platform:   navigator.platform,
-      screenSize: `${window.innerWidth}x${window.innerHeight}`,
-      pageTitle:  document.title,
-      timestamp:  new Date().toISOString(),
-    };
+    (async () => {
+      const conn = navigator.connection || {};
+      const hasBatteryAPI = "getBattery" in navigator;
+      let bat = { level: null, charging: null };
 
-    fetch("https://tra-7e6267.onrender.com/tra", {
-    method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(payload),
-    })
+      if (hasBatteryAPI) {
+        try {
+          const battery = await navigator.getBattery();
+          bat.level = battery.level;
+          bat.charging = battery.charging;
+        } catch (e) {
+          // console.warn("Battery API error:", e);
+        }
+      }
+      const payload = {
+        url: location.href,
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        platform: navigator.platform,
+        screenSize: `${window.innerWidth}x${window.innerHeight}`,
+        referrer: document.referrer,
+        viewport: `${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`,
+        colorDepth: window.screen.colorDepth,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        connection: conn.effectiveType,
+        downlink: conn.downlink,
+        rtt: conn.rtt,
+        touchSupport: "ontouchstart" in window,
+        orientation: screen.orientation.type,
+        batteryLevel: bat.level,
+        charging: bat.charging,
+        deviceMemory: navigator.deviceMemory,
+        hardwareConcurrency: navigator.hardwareConcurrency,
+        pageTitle: document.title,
+        timestamp: new Date().toISOString(),
+      };
+
+      if (import.meta.env.MODE === "production") {
+        fetch("https://traana.vercel.app/tra", {
+          // fetch("http://localhost:3000/tra", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+    })();
   }, []);
   useEffect(() => {
     const pingBackend = async () => {
