@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import iconCycle from "../../assets/image2.png";
 import { FaGithub, FaPhoneAlt, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import "./Footer.css";
@@ -61,6 +62,24 @@ function Footer() {
             &copy; {new Date().getFullYear()} Nihesh's Seller Portal. All rights
             reserved.
           </small>
+          <div className="mt-2">
+            <Link
+              to="/terms"
+              style={{
+                color: "var(--text-secondary)",
+                textDecoration: "none",
+                fontSize: "0.9rem",
+              }}
+              onMouseEnter={(e) =>
+                (e.target.style.color = "var(--accent-color)")
+              }
+              onMouseLeave={(e) =>
+                (e.target.style.color = "var(--text-secondary)")
+              }
+            >
+              Terms & Privacy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

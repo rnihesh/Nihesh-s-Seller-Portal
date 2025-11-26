@@ -17,6 +17,7 @@ import ProductForm from "./components/product/ProductForm";
 import UserContext from "./components/contexts/UserContext";
 import ThemeProvider from "./components/contexts/ThemeContext";
 import Analytics from "./components/analyt/Analytics.jsx";
+import Terms from "./components/common/Terms";
 
 const browserRouterObj = createBrowserRouter(
   [
@@ -47,6 +48,10 @@ const browserRouterObj = createBrowserRouter(
         {
           path: "analytics",
           element: <Analytics />,
+        },
+        {
+          path: "terms",
+          element: <Terms />,
         },
       ],
     },
